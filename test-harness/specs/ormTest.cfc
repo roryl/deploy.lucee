@@ -179,5 +179,13 @@ component extends=""{
 	function appVersionRelationTest(){
 		genericOneToMany("app", "version");
 	}
+
+	function appMigrationRelationTest(){
+		genericOneToMany("app", "migration");
+	}
+
+	function instanceVersionRelationTest(){
+		genericOneToMany("version", "instance");
+	}
 	
 }
