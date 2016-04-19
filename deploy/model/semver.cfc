@@ -1,4 +1,3 @@
-import deploy.model.semver;
 component {
 	public function init(required string semver){
 		variables.semverValue = listToArray(arguments.semver,".");
@@ -121,5 +120,9 @@ component {
 		} else {
 			return false;
 		}
+	}
+
+	public function isZero(){
+		return this.toString() == "0.0.0";
 	}
 }

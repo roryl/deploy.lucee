@@ -73,16 +73,36 @@ component extends=""{
 	function semverDiffTest(){
 		var semver = new deploy.model.semver("1.1.0");
 		var semver2 = new deploy.model.semver("1.2.1");
-		var semver3 = new deploy.model.semver("1.2.1");
+		var semver3 = new deploy.model.semver("3.2.1");
+		var semver4 = new deploy.model.semver("1.1.1")
 
 		expect(semver.diff(semver2).equals(new semver("0.1.0"))).toBeTrue();
 		expect(semver2.diff(semver).equals(new semver("0.1.0"))).toBeTrue();
+		expect(semver.diff(semver2).isMinor()).toBeTrue();
+
+		expect(semver.diff(semver3).equals(new semver("2.0.0"))).toBeTrue();
+		expect(semver3.diff(semver).equals(new semver("2.0.0"))).toBeTrue();
+		expect(semver.diff(semver3).isMajor()).toBeTrue();
+
+		expect(semver.diff(semver4).equals(new semver("0.0.1"))).toBeTrue();
+		expect(semver4.diff(semver).equals(new semver("0.0.1"))).toBeTrue();
+		expect(semver.diff(semver4).isPatch()).toBeTrue();
+
+
 	}
 
 	function semverTypeTest(){
 		expect(new semver("1.0.0").isMajor()).toBeTrue();
 		expect(new semver("0.1.0").isMinor()).toBeTrue();
 		expect(new semver("0.0.1").isPatch()).toBeTrue();	
+	}
+
+	function semverIsZeroTest(){
+		var semver = new deploy.model.semver("0.0.0");
+		expect(semver.isZero()).toBeTrue();
+
+		var semver = new deploy.model.semver("0.0.1");
+		expect(semver.isZero()).toBeFalse();
 	}
 	
 }

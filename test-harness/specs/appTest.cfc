@@ -1,6 +1,7 @@
 /**
 * My xUnit Test
 */
+import deploy.model.semver;
 component extends=""{
 	
 /*********************************** LIFE CYCLE Methods ***********************************/
@@ -33,8 +34,38 @@ component extends=""{
 
 /*********************************** TEST CASES BELOW ***********************************/
 	
-	function createMigrationNoVersionsTest(){
+	function createApp(){
+		var app = new ormTest().createDeploy().createApp("sampleapp", "sampleapp.com", "sample");
+		entitySave(app)
+		return app;
+	}
+
+	function getProviderTest(){
 		var app = new ormTest().createApp();
+		expect(app.getProvider()).toBeInstanceOf("provider");
+	}
+
+	function createMigrationWrongVersionsTest(){
+		var app = createApp();
+		var version = new ormTest().createVersion();
+		var version2 = entityNew("version", {semver: new semver("0.0.1")});
+		app.addVersion(version);
+		migrationThrowable = app.createMigration(version2);
+		expect(migrationThrowable.threw()).toBeTrue();
+		expect(migrationThrowable.getMessage()).toBe("This app does not have this version. Add the version before migrating to it");
+		// writeDump(migrationThrowable.get());
+	}
+
+	function createMigrationNoVersionsTest(){
+		var app = createApp();		
+		var version = new ormTest().createVersion();
+		migrationThrowable = app.createMigration(version);
+		expect(migrationThrowable.threw()).toBeTrue();
+		expect(migrationThrowable.getMessage()).toBe("No versions to migrate to. Please add a version");
+	}
+
+	function createMigrationMissingVersionsTest(){
+		var app = createApp();		
 		var version = new ormTest().createVersion();
 		migrationThrowable = app.createMigration(version);
 		expect(migrationThrowable.threw()).toBeTrue();
@@ -43,9 +74,9 @@ component extends=""{
 
 	function createMigrationWithVersionsTest(){
 
-		var app = new ormTest().createApp();
+		var app = createApp();		
 		var version = new ormTest().createVersion();
-		var version2 = new ormTest().createVersion();
+		var version2 = entityNew("version", {semver: new semver("0.0.1")})
 		app.addVersion(version);
 		app.addVersion(version2);
 		version.setApp(app);
@@ -58,6 +89,32 @@ component extends=""{
 		expect(Migration).toBeInstanceOf("migration");
 		expect(Migration.getApp()).notToBeNull();
 		expect(Migration.getApp()).toBeInstanceOf("app");
+
+		expect(arrayLen(Migration.getMigrationSteps())).toBe(3);
+
+	}
+
+	function createBalancerTest(){
+		transaction {
+			var app = createApp();
+			var balancer = app.createBalancer();
+			expect(balancer).toBeInstanceOf("balancer");
+			expect(balancer.isStopped()).toBeTrue();
+			transaction action="commit";
+		}
+	}
+
+	function createInstanceTest(){
+
+		transaction {
+			var app = createApp();
+			var instance = app.createInstance();
+			var balancer = app.createBalancer();
+			expect(instance).toBeInstanceOf("instance");
+			expect(balancer.hasInstance(instance)).toBeFalse();	
+			transaction action="commit";			
+		}
+
 	}
 
 	

@@ -1,6 +1,7 @@
 /**
 * My xUnit Test
 */
+import deploy.model.semver;
 component extends=""{
 	
 /*********************************** LIFE CYCLE Methods ***********************************/
@@ -23,6 +24,7 @@ component extends=""{
 			echo("use deploy; ");
 		}		
 		ORMReload();
+		ORMGetSession().close();
 	}
 
 	// executes after every test case
@@ -41,7 +43,7 @@ component extends=""{
 	}
 
 	function createApp(){
-		var app = entityNew("app", {name:"Letsflycheaper", domainName:"www.letsflycheaper.com"});
+		var app = entityNew("app", {name:"Letsflycheaper", domainName:"www.letsflycheaper.com", provider:"sample"});
 		entitySave(app);
 		return app;
 	}
@@ -59,7 +61,7 @@ component extends=""{
 	}
 
 	function createVersion(){
-		var entity = entityNew("version");
+		var entity = entityNew("version", {semver:new semver("0.0.0")});
 		entitySave(entity);
 		return entity;
 	}
@@ -69,6 +71,31 @@ component extends=""{
 		entitySave(entity);
 		return entity;
 	}
+
+	function createMigrationStep(){
+		var entity = entityNew("migrationStep");
+		entitySave(entity);
+		return entity;
+	}
+
+	function createMaintenanceStep(){
+		var entity = entityNew("maintenanceStep");
+		entitySave(entity);
+		return entity;
+	}
+
+	function createmodelMigrationStep(){
+		var entity = entityNew("modelMigrationStep");
+		entitySave(entity);
+		return entity;
+	}
+
+	function createnewVMStep(){
+		var entity = entityNew("newVMStep");
+		entitySave(entity);
+		return entity;
+	}
+
 
 	/***** SINGLE ENTYT TESTS ********************************/
 
@@ -83,6 +110,7 @@ component extends=""{
 			transaction action="commit";
 		}
 		expect(arrayLen(entityLoad("#entityName#"))).toBe(1);
+
 	}
 
 	function createDeployTest(){		
@@ -107,6 +135,22 @@ component extends=""{
 
 	function createMigrationTest(){
 		genericEntity("migration");
+	}
+
+	function createMigrationStepTest(){
+		genericEntity("migrationStep");
+	}
+
+	function createMaintenanceStepTest(){
+		genericEntity("maintenanceStep");
+	}
+
+	function createModelMigrationStepTest(){
+		genericEntity("ModelMigrationStep");
+	}
+
+	function createnewVMStepTest(){
+		genericEntity("newVMStep");
 	}
 	
 	/***** RELATIONSHIP TESTS *******************************/
@@ -186,6 +230,10 @@ component extends=""{
 
 	function instanceVersionRelationTest(){
 		genericOneToMany("version", "instance");
+	}
+
+	function migrationMigrationStepRelationTest(){
+		genericOneToMany("migration", "migrationStep");
 	}
 	
 }
