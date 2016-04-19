@@ -5,6 +5,8 @@ component persistent="true" table="migration" {
 	property name="app" fieldtype="many-to-one" cfc="app" fkcolumn="app_id" inverse="true";
 	property name="status";
 	property name="migrationSteps" fieldtype="one-to-many" cfc="migrationStep" fkcolumn="migration_id" singularname="migrationStep";
+	property name="instances" fieldtype="one-to-many" cfc="instance" fkcolumn="migration_id" singularname="instance";
+	property name="removedInstances" fieldtype="one-to-many" cfc="instance" fkcolumn="migration_removed_instance_id" singularname="removedInstance";
 
 	/**
 	 * Steps to performa  migration
@@ -40,7 +42,6 @@ component persistent="true" table="migration" {
 		var migrationSteps = this.getMigrationSteps();
 		this.setStatus("running");
 		for(step in migrationSteps){
-
 			try {
 				step.setStatus("running");
 				result = step.run();
@@ -56,6 +57,10 @@ component persistent="true" table="migration" {
 		}
 		this.setStatus("success");
 		return true;
+	}
+
+	public semver function getVersionChange(){
+		return this.getVersionFrom().getSemver().diff(this.getVersionTo().getSemver());
 	}
 
 }

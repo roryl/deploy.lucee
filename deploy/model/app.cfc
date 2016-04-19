@@ -58,10 +58,24 @@ component persistent="true" table="app" discriminatorColumn="app_type" {
 	}
 
 	public function createInstance(version=this.getCurrentVersion()){
+
 		var version = arguments.version;
-		var instance = entityNew("instance", {version:version});
-		instance.setApp(this);
-		entitySave(instance);
+		var provider = this.getProvider();
+		var providerMessage = provider.createInstance();
+		
+		if(providerMessage.isSuccess()){			
+			var instance = entityNew("instance", {version:version});
+			instance.setApp(this);
+			entitySave(instance);
+
+			var data = providerMessage.getData();			
+			instance.setName(data.name);
+			instance.setHost(data.host);
+			instance.setVcpus(data.vcpus);
+			instance.setMemory(data.memory);
+			instance.setDisk(data.disk);
+		}
+
 		return instance;
 	}
 
@@ -97,6 +111,14 @@ component persistent="true" table="app" discriminatorColumn="app_type" {
 		var step3 = entityNew("newvmStep", {migration:migration});
 		entitySave(step3);
 		migration.addMigrationStep(step3);
+
+		var step4 = entityNew("swapvmStep", {migration:migration});
+		entitySave(step4);
+		migration.addMigrationStep(step4);
+
+		var step5 = entityNew("unmaintenanceStep", {migration:migration});
+		entitySave(step5);
+		migration.addMigrationStep(step5);
 	}
 
 	public function populateMinorMigration(required migration Migration){

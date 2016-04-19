@@ -228,6 +228,10 @@ component extends=""{
 		genericOneToMany("app", "migration");
 	}
 
+	function migrationInstanceRelationTest(){
+		genericOneToMany("migration", "instance");
+	}
+
 	function instanceVersionRelationTest(){
 		genericOneToMany("version", "instance");
 	}

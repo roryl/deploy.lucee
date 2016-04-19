@@ -90,7 +90,7 @@ component extends=""{
 		expect(Migration.getApp()).notToBeNull();
 		expect(Migration.getApp()).toBeInstanceOf("app");
 
-		expect(arrayLen(Migration.getMigrationSteps())).toBe(3);
+		expect(arrayLen(Migration.getMigrationSteps())).toBe(5);
 
 	}
 

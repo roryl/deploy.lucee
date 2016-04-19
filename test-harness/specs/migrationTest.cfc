@@ -52,9 +52,18 @@ component extends=""{
 		return entityLoad("app", {name:"sampleapp"}, true);
 	}
 
-	function majorInitialTest(){
+	function majorInitialTest(){		
+
+		/*
+		 * Put up maintenance page
+		 * Perform Model Migration
+		 * Spin up VMs and smoke test against model
+		 * swap the new vm with a vm from the load balancer		 * 
+		 * Remove maintenance page
+		 */
 
 		transaction {
+
 			var app = loadApp();
 			var version = entityNew("version", {semver:new semver("1.0.0")});
 			entitySave(version);
@@ -65,9 +74,18 @@ component extends=""{
 				migration.reThrow();
 			} else {
 				migration = migrationThrowable.get();
-				migration.run();					
+				expect(migration.getVersionChange().isMajor()).toBeTrue();
+				migration.run();									
 			}
 			transaction action="commit";			
+
+			for(step in migration.getMigrationSteps()){
+				expect(step.getStatus()).toBe("success");
+			}
+
+			expect(arrayLen(Migration.getMigrationSteps())).toBe(5);
+			expect(app.getBalancer().isActive()).toBeTrue();
+
 		}
 
 	}
