@@ -37,6 +37,7 @@ component extends=""{
 	function createApp(){
 		var app = new ormTest().createDeploy().createApp("sampleapp", "sampleapp.com", "sample");
 		entitySave(app)
+		app.createBalancer();
 		return app;
 	}
 
@@ -74,23 +75,32 @@ component extends=""{
 
 	function createMigrationWithVersionsTest(){
 
-		var app = createApp();		
-		var version = new ormTest().createVersion();
-		var version2 = entityNew("version", {semver: new semver("0.0.1")})
-		app.addVersion(version);
-		app.addVersion(version2);
-		version.setApp(app);
-		version2.setApp(app);
+		transaction {
+			var app = createApp();		
+			var version = new ormTest().createVersion();
+			var version2 = entityNew("version", {semver: new semver("0.0.1")})
+			entitySave(version2);
+			var instance = app.createInstance();
+			entitySave(instance);
+			app.getBalancer().addInstance(instance);
+			app.addVersion(version);
+			app.addVersion(version2);
+			version.setApp(app);
+			version2.setApp(app);
 
-		var MigrationThrowable = app.createMigration(version2);		
-		
-		expect(MigrationThrowable.threw()).toBeFalse();
-		var Migration = MigrationThrowable.get();
-		expect(Migration).toBeInstanceOf("migration");
-		expect(Migration.getApp()).notToBeNull();
-		expect(Migration.getApp()).toBeInstanceOf("app");
 
-		expect(arrayLen(Migration.getMigrationSteps())).toBe(5);
+			var MigrationThrowable = app.createMigration(version2);		
+			
+			expect(MigrationThrowable.threw()).toBeFalse();
+			var Migration = MigrationThrowable.get();
+			expect(Migration).toBeInstanceOf("migration");
+			expect(Migration.getApp()).notToBeNull();
+			expect(Migration.getApp()).toBeInstanceOf("app");
+
+			expect(arrayLen(Migration.getMigrationSteps())).toBe(5);
+
+			transaction action="commit";
+		}
 
 	}
 

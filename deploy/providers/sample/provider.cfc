@@ -142,8 +142,8 @@ component {
 		return message;
 	}
 
-	public function getLoadBalancer(required instance id){
-		
+	public function getBalancer(required instance id){
+		return new balancer();
 	}
 
 }

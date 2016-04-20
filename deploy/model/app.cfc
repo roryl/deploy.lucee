@@ -119,10 +119,16 @@ component persistent="true" table="app" discriminatorColumn="app_type" {
 	}
 
 	public function addVMStepsForEachVM(required migration Migration){
+		
 		var Migration = arguments.migration;
 		var currentInstances = this.getBalancer().getInstances();
-		for(var instance in currentInstances){
 
+		if(isNull(currentInstances)){
+			throw("error, nothing to migrate");
+		}
+
+		for(var instance in currentInstances){
+			
 			var newvmStep = entityNew("newvmStep", {migration:migration, originalInstance:instance});
 			entitySave(newvmStep);
 			migration.addMigrationStep(newvmStep);
@@ -130,7 +136,7 @@ component persistent="true" table="app" discriminatorColumn="app_type" {
 			var swapvmStep = entityNew("swapvmStep", {migration:migration, newvmstep:newvmStep});
 			entitySave(swapvmStep);
 			migration.addMigrationStep(swapvmStep);
-			ORMFlush();
+			// ORMFlush();
 		}			
 	}
 

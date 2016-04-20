@@ -12,6 +12,10 @@ component persistent="true" table="instance" discriminatorValue="balancer" exten
 	this.ORMRemoveInstance = this.removeInstance;
 	this.removeInstance = this._removeInstance;
 
+	public function getProviderBalancer(){
+		var provider = this.getApp().getProvider().getBalancer(this.getInstanceId);
+	}
+
 	public void function _addInstance(required Instance instance){
 		ORMAddInstance(arguments.instance);
 	}
