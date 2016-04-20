@@ -6,22 +6,26 @@ component persistent="true" table="instance" discriminatorValue="balancer" exten
 	Override builtin ORM functions while maintaingin their 
 	original functionality
 	 */
-	this.ORMAddInstance = this.addInstance;
-	this.addInstance = this._addInstance;
+	public function init(){
+		this.ORMAddInstance = this.addInstance;
+		this.addInstance = this._addInstance;
 
-	this.ORMRemoveInstance = this.removeInstance;
-	this.removeInstance = this._removeInstance;
+		this.ORMRemoveInstance = this.removeInstance;
+		this.removeInstance = this._removeInstance;
+	}
 
 	public function getProviderBalancer(){
-		var provider = this.getApp().getProvider().getBalancer(this.getInstanceId);
+		var provider = this.getApp().getProvider();
+		return provider.getBalancer();
 	}
 
 	public void function _addInstance(required Instance instance){
-		ORMAddInstance(arguments.instance);
+		// getProviderBalancer().addInstance(arguments.instance.getHost());
+		this.ORMAddInstance(arguments.instance);
 	}
 
 	public void function _removeInstance(required Instance instance){
-		ORMARemoveInstance(arguments.instance);
+		this.ORMRemoveInstance(arguments.instance);
 	}
 
 	public function getOneRunningInstanceNotInMigration(required migration Migration){
