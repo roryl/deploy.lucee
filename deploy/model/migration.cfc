@@ -56,6 +56,7 @@ component persistent="true" table="migration" {
 
 		}
 		this.setStatus("success");
+		this.getApp().setCurrentVersion(this.getVersionTo());
 		return true;
 	}
 

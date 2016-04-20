@@ -38,11 +38,11 @@ component persistent="true" table="app" discriminatorColumn="app_type" {
 
 			if(AppIsAtZero()){
 				populateMajorMigration(migration);
-			} else if(versionFrom.diff(versionTo).isMajor()){
+			} else if(versionFrom.getSemver().diff(versionTo.getSemver()).isMajor()){
 				populateMajorMigration(migration);
-			} else if(versionFrom.diff(versionTo).isMinor()){
+			} else if(versionFrom.getSemver().diff(versionTo.getSemver()).isMinor()){
 				populateMinorMigration(migration);
-			} else if(versionFrom.diff(versionTo).isPatch()){
+			} else if(versionFrom.getSemver().diff(versionTo.getSemver()).isPatch()){
 				populatePatchMigration(migration);
 			}
 
@@ -62,18 +62,21 @@ component persistent="true" table="app" discriminatorColumn="app_type" {
 		var version = arguments.version;
 		var provider = this.getProvider();
 		var providerMessage = provider.createInstance();
-		
+
 		if(providerMessage.isSuccess()){			
 			var instance = entityNew("instance", {version:version});
+			this.addInstance(instance);
 			instance.setApp(this);
 			entitySave(instance);
 
-			var data = providerMessage.getData();			
+			var data = providerMessage.getData();
+			instance.setInstanceId(data.instanceId);		
 			instance.setName(data.name);
 			instance.setHost(data.host);
 			instance.setVcpus(data.vcpus);
 			instance.setMemory(data.memory);
 			instance.setDisk(data.disk);
+			instance.setStatus("running");
 		}
 
 		return instance;
@@ -123,6 +126,25 @@ component persistent="true" table="app" discriminatorColumn="app_type" {
 
 	public function populateMinorMigration(required migration Migration){
 
+		/*
+		*   		MINOR
+		*   			Perform Model Migration and smoke test a VM   			
+		*   			Spin up new VM and run smoke test
+		*   			swap VM with one in the load balancer
+		*   			
+		*/
+		var migration = arguments.migration;
+		var step2 = entityNew("modelMigrationStep", {migration:migration});
+		entitySave(step2);
+		migration.addMigrationStep(step2);
+
+		var step3 = entityNew("newvmStep", {migration:migration});
+		entitySave(step3);
+		migration.addMigrationStep(step3);
+
+		var step4 = entityNew("swapvmStep", {migration:migration});
+		entitySave(step4);
+		migration.addMigrationStep(step4);
 	}
 
 	public function populatePatchMigration(required migration Migration){

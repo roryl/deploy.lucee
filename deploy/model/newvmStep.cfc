@@ -10,11 +10,9 @@ component persistent="true" extends="migrationStep" discriminatorValue="newvm" {
 		var Version = Migration.getVersionTo();
 
 		var Instance = App.createInstance(Version);
-
 		this.setInstance(instance);
 		Migration.addInstance(instance);
 		instance.setMigration(Migration);
-
 		var smokeResult = instance.smokeTest();
 		if(smokeResult){
 			return true;

@@ -58,7 +58,7 @@ component {
 		var message = new providerMessage(argumentCollection={
 			success:true,
 			data:{
-				id:vm.droplet.id,
+				instanceId:vm.droplet.id,
 				name:vm.droplet.name,
 				memory:vm.droplet.memory,
 				vcpus:vm.droplet.vcpus,

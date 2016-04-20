@@ -84,9 +84,83 @@ component extends=""{
 			}
 
 			expect(arrayLen(Migration.getMigrationSteps())).toBe(5);
+			expect(arrayLen(Migration.getInstances())).toBe(1);
+			expect(arrayLen(Migration.getRemovedInstances())).toBe(1);
 			expect(app.getBalancer().isActive()).toBeTrue();
+			expect(arrayLen(app.getBalancer().getInstances())).toBe(1);
+			expect(arrayLen(app.getInstances())).toBe(2);
+
 
 		}
+
+	}
+
+	function majorTest(){
+
+		majorInitialTest();
+		transaction {
+			app = loadApp();
+			var version = entityNew("version", {semver:new semver("2.0.0")});
+			entitySave(version);
+			app.addVersion(version);
+			var migrationThrowable = app.createMigration(version);
+
+			if(migrationThrowable.threw()){
+				migration.reThrow();
+			} else {
+				migration = migrationThrowable.get();
+				expect(migration.getVersionChange().isMajor()).toBeTrue();
+				migration.run();									
+			}
+			transaction action="commit";			
+
+			for(step in migration.getMigrationSteps()){
+				expect(step.getStatus()).toBe("success");
+			}
+
+			expect(arrayLen(Migration.getMigrationSteps())).toBe(5);
+			expect(arrayLen(Migration.getInstances())).toBe(1);
+			expect(arrayLen(Migration.getRemovedInstances())).toBe(1);
+			expect(app.getBalancer().isActive()).toBeTrue();
+			expect(arrayLen(app.getBalancer().getInstances())).toBe(1);
+			expect(arrayLen(app.getInstances())).toBe(3);
+
+		}
+
+	}
+
+	function minorTest(){
+
+		majorInitialTest();
+		transaction {
+			app = loadApp();
+			var version = entityNew("version", {semver:new semver("1.1.0")});
+			entitySave(version);
+			app.addVersion(version);
+			var migrationThrowable = app.createMigration(version);
+
+			if(migrationThrowable.threw()){
+				migration.reThrow();
+			} else {
+				migration = migrationThrowable.get();
+				expect(migration.getVersionChange().isMinor()).toBeTrue();
+				migration.run();									
+			}
+			transaction action="commit";			
+
+			for(step in migration.getMigrationSteps()){
+				expect(step.getStatus()).toBe("success");
+			}
+
+			expect(arrayLen(Migration.getMigrationSteps())).toBe(3);
+			expect(arrayLen(Migration.getInstances())).toBe(1);
+			expect(arrayLen(Migration.getRemovedInstances())).toBe(1);
+			expect(app.getBalancer().isActive()).toBeTrue();
+			expect(arrayLen(app.getBalancer().getInstances())).toBe(1);
+			expect(arrayLen(app.getInstances())).toBe(3);
+
+		}
+
 
 	}
 

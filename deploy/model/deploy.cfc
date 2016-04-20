@@ -14,6 +14,9 @@ component persistent="true" table="deploy" discriminatorColumn="deploy_type" {
 			provider:arguments.provider,			
 		});
 
+		this.addApp(app);
+		app.setDeploy(this);
+
 		var semver = new semver("0.0.0");
 		var initialVersion = entityNew("version", {semver:semver});
 		entitySave(initialVersion);
