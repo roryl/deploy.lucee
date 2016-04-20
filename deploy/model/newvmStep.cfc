@@ -1,6 +1,7 @@
 component persistent="true" extends="migrationStep" discriminatorValue="newvm" {
 
-	property name="instance" fieldtype="one-to-one" cfc="instance" fkcolumn="instance_id";
+	property name="originalInstance" fieldtype="one-to-one" cfc="instance" fkcolumn="original_instance_id";
+	property name="newInstance" fieldtype="one-to-one" cfc="instance" fkcolumn="new_instance_id";
 	
 	public boolean function run(){
 
@@ -10,7 +11,7 @@ component persistent="true" extends="migrationStep" discriminatorValue="newvm" {
 		var Version = Migration.getVersionTo();
 
 		var Instance = App.createInstance(Version);
-		this.setInstance(instance);
+		this.setNewInstance(instance);
 		Migration.addInstance(instance);
 		instance.setMigration(Migration);
 		var smokeResult = instance.smokeTest();

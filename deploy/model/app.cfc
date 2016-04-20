@@ -111,17 +111,27 @@ component persistent="true" table="app" discriminatorColumn="app_type" {
 		entitySave(step2);
 		migration.addMigrationStep(step2);
 
-		var step3 = entityNew("newvmStep", {migration:migration});
-		entitySave(step3);
-		migration.addMigrationStep(step3);
-
-		var step4 = entityNew("swapvmStep", {migration:migration});
-		entitySave(step4);
-		migration.addMigrationStep(step4);
+		addVMStepsForEachVM(Migration);
 
 		var step5 = entityNew("unmaintenanceStep", {migration:migration});
 		entitySave(step5);
 		migration.addMigrationStep(step5);
+	}
+
+	public function addVMStepsForEachVM(required migration Migration){
+		var Migration = arguments.migration;
+		var currentInstances = this.getBalancer().getInstances();
+		for(var instance in currentInstances){
+
+			var newvmStep = entityNew("newvmStep", {migration:migration, originalInstance:instance});
+			entitySave(newvmStep);
+			migration.addMigrationStep(newvmStep);
+
+			var swapvmStep = entityNew("swapvmStep", {migration:migration, newvmstep:newvmStep});
+			entitySave(swapvmStep);
+			migration.addMigrationStep(swapvmStep);
+			ORMFlush();
+		}			
 	}
 
 	public function populateMinorMigration(required migration Migration){
@@ -138,16 +148,17 @@ component persistent="true" table="app" discriminatorColumn="app_type" {
 		entitySave(step2);
 		migration.addMigrationStep(step2);
 
-		var step3 = entityNew("newvmStep", {migration:migration});
-		entitySave(step3);
-		migration.addMigrationStep(step3);
-
-		var step4 = entityNew("swapvmStep", {migration:migration});
-		entitySave(step4);
-		migration.addMigrationStep(step4);
+		addVMStepsForEachVM(Migration);
 	}
 
 	public function populatePatchMigration(required migration Migration){
+
+		/*
+			PATCH
+	    		Spin up new VM and run smoke test
+	    		switch old&new vm
+		 */
+		addVMStepsForEachVM(Migration);
 
 	}
 }

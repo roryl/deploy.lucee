@@ -161,7 +161,38 @@ component extends=""{
 
 		}
 
+	}
 
+	function patchTest(){
+		majorInitialTest();
+		transaction {
+			app = loadApp();
+			var version = entityNew("version", {semver:new semver("1.0.1")});
+			entitySave(version);
+			app.addVersion(version);
+			var migrationThrowable = app.createMigration(version);
+
+			if(migrationThrowable.threw()){
+				migration.reThrow();
+			} else {
+				migration = migrationThrowable.get();
+				expect(migration.getVersionChange().isPatch()).toBeTrue();
+				migration.run();									
+			}
+			transaction action="commit";			
+
+			for(step in migration.getMigrationSteps()){
+				expect(step.getStatus()).toBe("success");
+			}
+
+			expect(arrayLen(Migration.getMigrationSteps())).toBe(2);
+			expect(arrayLen(Migration.getInstances())).toBe(1);
+			expect(arrayLen(Migration.getRemovedInstances())).toBe(1);
+			expect(app.getBalancer().isActive()).toBeTrue();
+			expect(arrayLen(app.getBalancer().getInstances())).toBe(1);
+			expect(arrayLen(app.getInstances())).toBe(3);
+
+		}
 	}
 
 	
