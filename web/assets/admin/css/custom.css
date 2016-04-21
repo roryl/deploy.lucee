@@ -32,7 +32,23 @@ th, td {
 	text-align:center;
 }
 
-.btn-syncql {
-	background-color: hsla(256, 47%, 59%, 1);
+.btn-deploy {
+	background-color: #1880B1;
 	color: #fff;
+}
+
+.label-deploy {
+  background-color: #1880B1;
+  color: #fff;
+}
+
+.btn-deploy {
+  background-color: #1880B1;
+  /*color: #fff;*/
+}
+
+td .table-action {
+  border-style:none;
+  border-width:0px;
+  background-color:;
 }

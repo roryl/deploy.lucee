@@ -146,4 +146,44 @@ component {
 		return new balancer();
 	}
 
+	public function getImageOptions(){
+		var out = {
+			os:[
+				"centos",
+				"fedora",
+				"ubuntu"
+			],
+			"size": [
+		        "32gb",
+		        "16gb",
+		        "2gb",
+		        "1gb",
+		        "4gb",
+		        "8gb",
+		        "512mb",
+		        "64gb",
+		        "48gb"
+		    ],
+			region:[
+				"nyc1",
+				"nyc2",
+				"sfo1"
+			],			
+		}
+		return out;
+	}
+
+	public function getBalancerOptions(){
+
+		out = [
+			"Single Mod Proxy",
+			"HA Mod Proxy"
+		]
+		return out;
+	}
+
+	public boolean function validateSettings(){
+		return true;
+	}
+
 }

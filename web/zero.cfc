@@ -103,8 +103,30 @@ component extends="one" {
 	  { method = 'create', httpMethods = [ '$POST' ] },
 	  { method = 'read', httpMethods = [ '$GET' ], includeId = true },
 	  { method = 'update', httpMethods = [ '$PUT','$PATCH', '$POST' ], includeId = true },
-	  { method = 'delete', httpMethods = [ '$DELETE' ], includeId = true }
+	  { method = 'delete', httpMethods = [ '$DELETE' ], includeId = true },
+	  { method = 'delete', httpMethods = [ '$POST' ], includeId = true, routeSuffic = '/delete' }
 	];
+
+	
+	loadControllers();
+	/**
+	 * Createa a default RESTful route for each controller present
+	 * in the controllers folder 
+	 * @return {array} The routes created by this function
+	 */
+	private array function loadControllers(){
+		
+		variables.framework.routes = []
+		var controllers = directoryList(path=expandPath("controllers"), filter="*.cfc");
+		// writeDump(controllers);
+		// abort;
+		for(var controller in controllers){
+			file = getFileFromPath(controller);
+			name = listFirst(file, ".");
+			variables.framework.routes.append({ "$RESOURCES" = { resources = name} })
+		}
+		return variables.framework.routes;
+	}
 	
 	public function before( rc ){
 

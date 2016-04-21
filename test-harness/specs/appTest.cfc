@@ -136,6 +136,40 @@ component extends=""{
 
 	}
 
+	function createImageTest(){
+		transaction {
+			var app = createApp();
+			var image = app.createImage("My Name", {"os":"centos", "size":"512gb", "region":"nyc1"});
+			transaction action="commit";
+		}
+
+		var images = app.getImages();
+		// writeDump(app.getImages());
+		expect(arrayLen(images)).toBe(1);
+		expect(arrayLen(images[1].getImageSettings())).toBe(3);
+		expect(app.getDefaultImage() === images[1]).toBeTrue();		
+	}
+
+	function createDefaultImageTest(){
+
+		transaction {
+			var app = createApp();
+			var image = app.createImage("My Name", {"os":"centos", "size":"512gb", "region":"nyc1"});
+			var image = app.createImage("My Name 2", {"os":"centos", "size":"512gb", "region":"nyc1"});
+			transaction action="commit";
+		}
+
+		var images = app.getImages();
+		// writeDump(app.getImages());
+		expect(arrayLen(images)).toBe(2);
+		expect(arrayLen(images[1].getImageSettings())).toBe(3);
+		expect(app.getDefaultImage() === images[1]).toBeTrue();	
+		expect(app.getDefaultImage() === images[2]).toBeFalse();
+		
+	}
+
+
+
 	
 	
 }

@@ -96,6 +96,18 @@ component extends=""{
 		return entity;
 	}
 
+	function createImage(){
+		var entity = entityNew("image");
+		entitySave(entity);
+		return entity;
+	}
+
+	function createImageSetting(){
+		var entity = entityNew("imageSetting");
+		entitySave(entity);		
+		return entity;
+	}
+
 
 	/***** SINGLE ENTYT TESTS ********************************/
 
@@ -151,6 +163,14 @@ component extends=""{
 
 	function createnewVMStepTest(){
 		genericEntity("newVMStep");
+	}
+
+	function createImageTest(){
+		genericEntity("image");
+	}
+
+	function createImageSettingTest(){
+		genericEntity("imageSetting");
 	}
 	
 	/***** RELATIONSHIP TESTS *******************************/
@@ -238,6 +258,14 @@ component extends=""{
 
 	function migrationMigrationStepRelationTest(){
 		genericOneToMany("migration", "migrationStep");
+	}
+
+	function appImageRelationTest(){
+		genericOneToMany("app", "image");
+	}
+
+	function imageImageSettingRelationTest(){
+		genericOneToMany("image", "imageSetting");
 	}
 	
 }

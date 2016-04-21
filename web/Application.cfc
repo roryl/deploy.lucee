@@ -62,9 +62,9 @@ component extends="zero" {
 	this.ormenabled = true;
 	this.ormsettings.dialect = "MySQLwithInnoDB";
 
-	variables.framework.routes = [
-		{ "$RESOURCES" = { resources = "apps"} },
-	]
+	// variables.framework.routes = [
+	// 	{ "$RESOURCES" = { resources = "apps"} },
+	// ]
 
 
 

@@ -9,6 +9,8 @@ component persistent="true" table="app" discriminatorColumn="app_type" {
 	property name="versions" fieldtype="one-to-many" cfc="version" fkcolumn="app_version_id" singularname="version";	
 	property name="currentVersion" fieldtype="one-to-one" cfc="version" fkcolumn="current_version_id";
 	property name="migrations" fieldtype="one-to-many" cfc="migration" fkcolumn="app_id" singularname="migration";
+	property name="images" fieldtype="one-to-many" cfc="image" fkcolumn="app_id" singularname="image";
+	property name="defaultImage" fieldtype="one-to-one" cfc="image" fkcolumn="default_image_id";
 
  	/**
  	 * Creates a migration plan from the current version to the future version selected
@@ -80,6 +82,37 @@ component persistent="true" table="app" discriminatorColumn="app_type" {
 		}
 
 		return instance;
+	}
+
+	public function createImage(required string name, required struct settings){
+
+		var settings = arguments.settings;
+		var Provider = this.getProviderImplemented();
+		var settingsValid = Provider.validateSettings(settings);
+		if(settingsValid){
+			// writeDump(settings);
+
+			var image = entityNew("image");
+			entitySave(image);
+			for(var setting in settings){
+				var key = setting;
+				var value = settings[key];
+				var imageSetting = entityNew("imageSetting", {key:key, value:value});
+				entitySave(imageSetting);
+				image.addImageSetting(imageSetting);
+				imageSetting.setImage(image);
+			}
+
+		}
+
+		this.addImage(image);
+		image.setApp(this);
+
+		if(isNull(this.getDefaultImage())){
+			this.setDefaultImage(image);
+		}
+
+		return image;
 	}
 
 	public function appIsAtZero(){

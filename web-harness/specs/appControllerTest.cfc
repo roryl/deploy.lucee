@@ -76,6 +76,13 @@ component extends=""{
 
 	}
 
+	function newStep1Test(){
+		var app = new web.Application();
+		var apps = new web.controllers.apps(app);
+		var result = apps.new();
+		expect(result.data.next_step).toBe("/index.cfm/apps/new");
+	}
+
 	
 
 	
