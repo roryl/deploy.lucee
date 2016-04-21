@@ -31,7 +31,7 @@ component{
 	this.ormsettings.logsql="true";
 	this.ormsettings.flushAtRequestEnd = false;
 	this.ormsettings.autoManageSession=false;
-	// this.ormsettings.dialect = "MySQLwithInnoDB";
+	this.ormsettings.dialect = "MySQLwithInnoDB";
 	// any orm definitions go here.
 
 	// request start

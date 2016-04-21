@@ -42,8 +42,17 @@ component extends=""{
 	}
 
 	function getProviderTest(){
-		var app = new ormTest().createApp();
-		expect(app.getProvider()).toBeInstanceOf("provider");
+		transaction {
+			var app = createApp();			
+			transaction action="commit";
+		}
+		// writeDump(app);
+		// abort;
+		ORMFlush();
+		// // writeDump(app);
+		// writeDump(app.getCurrentVersion());
+		// abort;
+		expect(app.getProviderImplemented()).toBeInstanceOf("provider");
 	}
 
 	function createMigrationWrongVersionsTest(){

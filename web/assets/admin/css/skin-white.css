@@ -1,0 +1,48 @@
+.navbar-default.navbar-light li > a:focus,
+.navbar-default.navbar-light li > a:hover,
+.navbar-default.navbar-light .active > a,
+.navbar-default.navbar-light .active > a:focus,
+.navbar-default.navbar-light .active > a:hover,
+.navbar-default.navbar-light .open > a,
+.navbar-default.navbar-light .open > a:focus,
+.navbar-default.navbar-light .open > a:hover,
+.sidenav a.active,
+.sidenav a:focus,
+.sidenav a:hover,
+.sidenav > li > a.active,
+.sidenav > li > a:focus,
+.sidenav > li > a:hover,
+.sidebar-boxed .sidenav > li > a:hover,
+.sidebar-boxed .sidenav > li > a.open,
+a,
+a:focus,
+a:hover,
+h1 a:before,
+h2 a:before,
+h3 a:before,
+.toc a:hover,
+.toc a:active,
+.tabs-text .nav-tabs > li.active a,
+.tabs-icon .nav-tabs > li.active a,
+.tabs-btn .nav-tabs li.active a,
+.code-tabs .languages .btn.active,
+.code-tabs .languages .btn:active,
+.promo > .fa,
+.promo > .glyphicon {
+  color: hsla(256, 47%, 59%, 1);
+}
+
+.site-header .navbar,
+.sidenav > li > ul a.active:before,
+.sidebar-line .sidenav a.active:before {
+  background-color: white;
+}
+
+.tabs-text .nav-tabs > li.active,
+.tabs-icon .nav-tabs > li.active {
+  border-bottom-color: hsla(256, 47%, 59%, 1);
+}
+
+.grid-view li {
+  border-top-color: white;
+}

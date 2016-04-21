@@ -15,7 +15,7 @@ component persistent="true" table="instance" discriminatorValue="balancer" exten
 	}
 
 	public function getProviderBalancer(){
-		var provider = this.getApp().getProvider();
+		var provider = this.getApp().getProviderImplemented();
 		return provider.getBalancer();
 	}
 

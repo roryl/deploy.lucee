@@ -1,4 +1,10 @@
 component {
+
+	property name="major";
+	property name="minor";
+	property name="patch";
+	property name="string";
+
 	public function init(required string semver){
 		variables.semverValue = listToArray(arguments.semver,".");
 		if(variables.semverValue.len() < 3){
@@ -26,6 +32,10 @@ component {
 
 	public function toString(){
 		return variables.semverValue.toList(".");
+	}
+
+	public function getString(){
+		return this.toString();
 	}
 
 	public function isBefore(required Semver Semver){

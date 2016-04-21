@@ -1,0 +1,38 @@
+.navbar-default .navbar-nav>li>a {
+    color: hsla(0, 0%, 0%, 1);
+ }
+
+ .site-header .navbar-brand> img {
+    display: inline-block;
+    max-height: 50px;
+    transition: .2s ease;
+}
+
+.navbar-default .navbar-nav>.hero>a {
+	color: white;
+    background-color: #1880B1;
+    border-radius: 3px;
+    /*transition: .3s linear;*/
+}
+
+.navbar-default .navbar-nav > li > a:focus,
+.navbar-default .navbar-nav > li > a:hover {
+  color: #1880B1;
+}
+
+.navbar-default .navbar-nav > .active > a,
+.navbar-default .navbar-nav > .active > a:focus,
+.navbar-default .navbar-nav > .active > a:hover {
+  color: hsla(256, 47%, 59%, 1);
+  background-color: transparent;
+  font-weight: 700;
+}
+
+th, td {
+	text-align:center;
+}
+
+.btn-syncql {
+	background-color: hsla(256, 47%, 59%, 1);
+	color: #fff;
+}

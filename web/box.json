@@ -1,0 +1,8 @@
+{
+    "dependencies":{
+        "cfml_optional.git":"https://github.com/roryl/cfml_optional.git"
+    },
+    "installPaths":{
+        "cfml_optional.git":"vendor\\cfml_optional.git"
+    }
+}

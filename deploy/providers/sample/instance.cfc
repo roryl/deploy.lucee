@@ -5,7 +5,7 @@ component {
 	}
 
 	public function start(){
-
+		return callStackGet();
 	}
 
 	public function stop(){

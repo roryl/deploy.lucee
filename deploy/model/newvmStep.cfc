@@ -7,7 +7,7 @@ component persistent="true" extends="migrationStep" discriminatorValue="newvm" {
 
 		var Migration = this.getMigration();
 		var App = Migration.getApp();
-		var provider = App.getProvider();
+		var provider = App.getProviderImplemented();
 		var Version = Migration.getVersionTo();
 
 		var Instance = App.createInstance(Version);

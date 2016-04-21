@@ -1,7 +1,7 @@
 component persistent="true" table="version"{
 	property name="id" fieldtype="id" generator="native";
-	property name="semver" notnull="true";
-	property name="app" fieldtype="many-to-one" cfc="app" fkcolumn="app_id" inverse="true";
+	property name="semver" notnull="true" cfc="semver";
+	property name="app" fieldtype="many-to-one" cfc="app" fkcolumn="app_version_id" inverse="true";
 	property name="currentApp" fieldtype="one-to-one" cfc="app" mappedby="currentVersion";
 	property name="migrationFrom" fieldtype="one-to-one" cfc="migration" mappedby="versionFrom";
 	property name="migrationTo" fieldtype="one-to-one" cfc="migration" mappedby="versionTo";

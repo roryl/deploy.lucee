@@ -3,10 +3,11 @@ component {
 	/*
 	SSH tools: https://github.com/hierynomus/sshj
 	https://github.com/hierynomus/sshj
+	Adding Hosts http://stackoverflow.com/questions/10922292/struggling-with-sshj-example-exec-could-not-verify-ssh-rsa-host-key-with
 	 */
 
 	public function enableMaintenance(){
-		return true;
+		return callStackGet();
 	}
 
 	public boolean function isInMaintenance(){
