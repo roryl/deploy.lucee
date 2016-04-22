@@ -3,6 +3,7 @@ component persistent="true" table="app" discriminatorColumn="app_type" {
 	property name="name";
 	property name="domainName";
 	property name="provider";
+	property name="status" persistent="false";
 	property name="deploy" fieldtype="many-to-one" cfc="deploy" fkcolumn="deploy_id" inverse="true";
 	property name="instances" fieldtype="one-to-many" cfc="instance" fkcolumn="app_instance_id" singularname="instance";
 	property name="balancer" fieldtype="one-to-one" cfc="balancer" fkcolumn="app_balancer_id";	
@@ -59,6 +60,12 @@ component persistent="true" table="app" discriminatorColumn="app_type" {
 		return balancer;
 	}
 
+	public function getStatus(){
+		if(appIsAtZero()){
+			return "unprovisioned";
+		}
+	}
+
 	public function createInstance(version=this.getCurrentVersion()){
 
 		var version = arguments.version;
@@ -92,7 +99,7 @@ component persistent="true" table="app" discriminatorColumn="app_type" {
 		if(settingsValid){
 			// writeDump(settings);
 
-			var image = entityNew("image");
+			var image = entityNew("image", {name:name});
 			entitySave(image);
 			for(var setting in settings){
 				var key = setting;
@@ -121,8 +128,10 @@ component persistent="true" table="app" discriminatorColumn="app_type" {
 		return semver.isZero();
 	}
 
-	public function getProviderImplemented(){
-		return createObject("deploy.providers.#variables.provider#.provider").init();
+	public Provider function getProviderImplemented(){
+		
+		var ProviderOptional = this.getDeploy().getProviderImplementedByName(this.getProvider());
+		return ProviderOptional.get();
 	}
 
 	public function populateMajorMigration(required migration Migration){

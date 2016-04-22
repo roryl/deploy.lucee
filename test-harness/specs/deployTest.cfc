@@ -47,16 +47,55 @@ component extends=""{
 			entitySave(deploy);
 			var app = deploy.createApp("sampleapp", "sampleapp.com", "sample");
 			entitySave(app);
+			ORMFlush();
 			transaction action="commit";
 		}
 
-		// writeDump(app.getId());
+		
+		
 		var getApp = deploy.getAppById(app.getId());
 		expect(getApp).toBeInstanceOf("optional");
+		expect(getApp.exists()).toBeTrue();
 		expect(getApp.get() === app).toBeTrue();
 
 		var tryApp = deploy.getAppById(2);
 		expect(tryApp.exists()).toBeFalse();
+	}
+
+	function getImageIdTest(){
+
+		transaction {
+			var deploy = new ormTest().createDeploy();
+			entitySave(deploy);
+			var app = deploy.createApp("sampleapp", "sampleapp.com", "sample");
+			entitySave(app);
+			ORMFlush();
+			var image = app.createImage("myImage",{});
+			transaction action="commit";
+		}
+
+		var getImage = deploy.getImageById(image.getId());
+		expect(getImage).toBeInstanceOf("optional");
+		expect(getImage.exists()).toBeTrue();
+		expect(getImage.get() === image).toBeTrue();
+
+		var tryImage = deploy.getImageById(2);
+		expect(tryImage.exists()).toBeFalse();
+	}
+
+	function getProviderImplementedByNameTest(){
+
+		var deploy = new ormTest().createDeploy();
+
+		provider = deploy.getProviderImplementedByName("sample");
+		expect(provider).toBeInstanceOf("Optional");
+		expect(provider.exists()).toBeTrue();
+		expect(provider.get()).toBeInstanceOf("provider");
+
+		//test fail
+		provider = deploy.getProviderImplementedByName("samples");
+		expect(provider).toBeInstanceOf("Optional");
+		expect(provider.exists()).toBeFalse();
 
 	}
 

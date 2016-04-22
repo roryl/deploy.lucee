@@ -11,8 +11,8 @@
 					</thead>
 					<tbody>
 						<tr>
-							<td>Status:</td>
-							<td><span class="label label-success">Active</span></td>
+							<td>Status:</td>							
+							<td><span class="label label-default">{{data.status}}</span></td>
 						</tr>
 						<tr>
 							<td>Current Version:</td>
@@ -34,10 +34,18 @@
 						</tr>
 						<tr>
 							<td>Auto Scaling</td>
-							<td><strong>Off</strong> &nbsp;&nbsp; <button class="btn btn-default btn-xs btn-depoy"><i class="fa fa-paper-plane"></i> Turn On</button></td>
+							<td><strong>Off</strong> &nbsp;&nbsp; <a class="btn btn-default btn-xs btn-depoy"><i class="fa fa-paper-plane"></i> Turn On</a></td>
 							<script>
 
 							</script>
+						</tr>
+						<tr>
+							<td>Default Image</td>
+							<td>{{data.default_image.name}} <a class="btn btn-default btn-xs btn-depoy" href="/index.cfm/images/{{data.default_image.id}}"><i class="glyphicon glyphicon-edit"></i> Edit</a></td>
+						</tr>
+						<tr>
+							<td>Provider</td>
+							<td>{{data.provider}}</td>
 						</tr>
 					</tbody>
 				</table>

@@ -147,37 +147,89 @@ component {
 	}
 
 	public function getImageOptions(){
-		var out = {
-			os:[
-				"centos",
-				"fedora",
-				"ubuntu"
-			],
-			"size": [
-		        "32gb",
-		        "16gb",
-		        "2gb",
-		        "1gb",
-		        "4gb",
-		        "8gb",
-		        "512mb",
-		        "64gb",
-		        "48gb"
-		    ],
-			region:[
-				"nyc1",
-				"nyc2",
-				"sfo1"
-			],			
-		}
+		var out = [
+			{
+				name:"Operating System",
+				id:"os",
+				options:[
+
+					{
+						id:"centos",
+						name:"CentOS"
+					},
+					{
+						id:"fedora",
+						name:"Fedora"
+					},
+					{
+						id:"ubuntu",
+						name:"Ubuntu"
+					}				
+				]
+			},
+			{
+				name:"Image Size",
+				id:"size",
+				options: [
+
+					{
+						id:"512mb",
+						name:"512 MB / 1 VCPU / 20GB"
+					},
+					{
+						id:"1gb",
+						name:"1 GB / 1 VCPU / 30GB"
+					}
+
+
+			        // "32gb",
+			        // "16gb",
+			        // "2gb",
+			        // "1gb",
+			        // "4gb",
+			        // "8gb",
+			        // "512mb",
+			        // "64gb",
+			        // "48gb"
+			    ]
+		    },
+		    {
+		    	name:"Region",
+		    	id:"region",
+				options:[
+
+					{
+						id:"nyc1",
+						name:"New York City 1"
+					},
+					{
+						id:"nyc2",
+						name:"New York City 2"
+					},
+					{
+						id:"sfo1",
+						name:"San Francisco 1"
+					},
+					// "nyc1",
+					// "nyc2",
+					// "sfo1"
+				]
+			}		
+		]
 		return out;
 	}
 
 	public function getBalancerOptions(){
 
 		out = [
-			"Single Mod Proxy",
-			"HA Mod Proxy"
+			{
+				id:"single_mod_proxy",
+				name:"Single Mod Proxy"
+			},
+			{
+				id:"ha_mod_proxy",
+				name:"HA Mod Proxy"
+			}			
 		]
 		return out;
 	}

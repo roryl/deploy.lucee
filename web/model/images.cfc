@@ -1,17 +1,12 @@
 component accessors="true" {
-	property name="name";
-	property name="domain_name";
-	property name="provider";
-	property name="step";
-	property name="submit";
-	property name="balancer";
-	property name="image_name";
+	property name="name";	
+	property name="submit";	
 	property name="image";
 
 	variables.errors = [];
 
-	public function init(required deploy Deploy){
-		variables.deploy = arguments.deploy;
+	public function init(required app app){
+		variables.app = arguments.app;
 	}
 
 	public function populate(required struct params){
@@ -43,32 +38,14 @@ component accessors="true" {
 		if(name == ""){
 			addError("Name cannot be empty");
 		}
-	}
-
-	public function setDomain_Name(required domain_name){
-		if(listLen(domain_name,".") LT 2){
-			addError("That is not a valid domain");
-		}
-	}
-
-	public function setProvider(provider){
-
-		var provider = arguments.provider;
-		var ProviderOptional = variables.deploy.getProviderImplementedByName(provider);
-		if(!ProviderOptional.exists()){
-			addError("That is not a valid provider. Please check your result and try again");
-		} else {
-			variables.provider = provider;
-		}
-
-	}
+	}	
 
 	public function getProviderImplemented(){
-		return  variables.deploy.getProviderImplementedByName(this.getProvider());
+		return  variables.app.getProviderImplemented();
 	}
 
 	public function getBalancerOptions(){
-		var options = getProviderImplemented().get().getBalancerOptions();
+		var options = getProviderImplemented().getBalancerOptions();
 
 		//Decorate options with the selected value, this is for the view
 		if(!this.getBalancer() == ""){
@@ -83,7 +60,7 @@ component accessors="true" {
 
 	public function getImageOptions(){
 
-		var options = getProviderImplemented().get().getImageOptions();
+		var options = getProviderImplemented().getImageOptions();
 		
 		//Decorate options with values that have been selected
 		for(var option in options){

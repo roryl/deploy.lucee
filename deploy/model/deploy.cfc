@@ -30,4 +30,28 @@ component persistent="true" table="deploy" discriminatorColumn="deploy_type" {
 		return new Optional(entityLoad("app",{id:arguments.id, deploy:this},true));
 	}
 
+	public Optional function getImageById(required numeric id){
+		var Image = entityLoad("image",{id:id}, true);
+		if(isNull(image)){
+			return new Optional();
+		} else {
+			if(image.getApp().getDeploy() === this){
+				return new Optional(Image);
+			} else {
+				return new Optional();
+			}
+		}		
+	}
+
+	public Optional function getProviderImplementedByName(required string name){
+
+		var name = arguments.name;
+		var file = "/deploy/providers/#name#/provider.cfc";
+		if(fileExists(file)){
+			return new optional(createObject("deploy.providers.#name#.provider").init());
+		} else {
+			return new optional();
+		}
+	}
+
 }

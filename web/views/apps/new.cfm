@@ -53,7 +53,10 @@
 								<select class="form-control" name="balancer" 
 									{{#if data.balancer}}value="{{data.balancer}}"{{/if}}
 									{{#unless data.step_2}}readonly{{/unless}}>
-									<option value="apache_mod_proxy">Apache Mod Proxy</option>
+
+									{{#each data.balancer_options}}
+										<option value="{{id}}" {{#if selected}}selected{{/if}}>{{name}}</option>
+									{{/each}}
 								</select>
 							</div>
 						</li>
@@ -62,10 +65,27 @@
 							<!--- STEP 2 --->
 							<div>
 								<a id="instance"></a>
-								<h2>Configure Default Instance</h2>
-								<p>Select the configuration options for the default instance for this applicaiton. These can be changed later</p>
-								<label for="location">Base Image</label>
-								<select class="form-control" name="instance.image" 
+								<h2>Configure Default Image</h2>
+								<p>Select the configuration options for the default image for this applicaiton. These can be changed later</p>
+											
+								<div class="form-group">
+									<label for="image_name">Image Name</label>
+									<p>Give your image a friendly name to refer to</p>
+									<input type="text" class="form-control disabled" name="image_name" placeholder="friendly name" {{#if data.image_name}}value="{{data.image_name}}"{{/if}} {{#unless data.step_3}}readonly{{/unless}}>
+								</div>
+
+								{{#each data.image_options}}
+									<label for="image.{{id}}">{{name}}</label>
+									<select class="form-control" name="image.{{id}}" 
+										{{#unless data.step_3}}readonly{{/unless}}>
+										>
+										{{#each options}}
+											<option value="{{id}}" {{#if selected}}selected{{/if}}>{{name}}</option>
+										{{/each}}										
+									</select>
+								{{/each}}
+
+								<!--- <select class="form-control" name="instance.image" 
 									{{#if data.image}}value="{{data.image}}"{{/if}}
 									{{#unless data.step_3}}readonly{{/unless}}>
 									<option value="image">NYC</option>
@@ -94,11 +114,12 @@
 									{{#unless data.step_3}}readonly{{/unless}}>
 									<option value="disk">NYC</option>
 								</select>
+								 --->
 								<label for="location">Boot Script</label>
 								<p>This is the shell script which will be executed at boot</p>
 								<textarea 
 									class="form-control" 
-									name="instance.boot_script" 
+									name="image.boot_script" 
 									{{#if data.boot_script}}
 										value="{{data.boot_script}}"
 									{{/if}}
@@ -116,7 +137,7 @@
 						</li>											
 					</ul>
 					{{#unless data.step_1}}
-					<button type="submit" name="back" class="btn btn-default" value="true">Back</button>						
+					<button type="submit" name="back" class="btn btn-default" value="true">Back</button>										
 					{{/unless}}
 
 					{{#if data.step_4}}

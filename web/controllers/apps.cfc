@@ -14,7 +14,8 @@ component accessors="true" {
 						step="0",
 						balancer,
 						submit=false,
-						instance=[],
+						image_name,
+						image=[],
 						back=false){
 
 		var submit = arguments.submit;
@@ -24,6 +25,8 @@ component accessors="true" {
 		structDelete(arguments,"submit");
 		structDelete(arguments,"back");
 
+		var Deploy = variables.fw.getDeploy();
+
 		if(back){
 			step = step - 2;
 		}
@@ -32,19 +35,33 @@ component accessors="true" {
 		// writeDump(form);
 		// writeDump(arguments);
 		// abort;
-		if(step == "1"){
-			var apps = new web.model.apps();
+		// 
+		if(step == "0"){
+			var out = {
+				success:true,
+				data:{
+					next_step:"/index.cfm/apps/new##balancer",
+					step:"1",
+					step_1:true			
+				}
+			}	
+		}
+		else if(step == "1"){
+			var apps = new web.model.apps(Deploy);
 			apps.populate(arguments);
-			if(apps.isValid()){
+			if(apps.isValid()){			
 				var out = {
 					success:true,
 					data:{
+						balancer_options:apps.getBalancerOptions(),
+						image_options:apps.getImageOptions(),
 						next_step:"/index.cfm/apps/new##instance",
 						step_1_complete:true,
 						step:"2",
 						step_2:true			
 					}
-				}			
+				}		
+				// writeDump(out);	
 			} else {
 				var out = {
 					success:false,
@@ -56,13 +73,16 @@ component accessors="true" {
 				}
 			}			
 		} else if(step == "2"){
-			var apps = new web.model.apps();
+			var apps = new web.model.apps(Deploy);
 			apps.populate(arguments);
 			// writeDump(apps);
-			if(apps.isValid()){
+			if(apps.isValid()){		
+				
 				var out = {
 					success:true,
 					data:{
+						balancer_options:apps.getBalancerOptions(),
+						image_options:apps.getImageOptions(),						
 						next_step:"/index.cfm/apps/new##review",
 						step:"3",
 						step_1_complete:true,
@@ -70,6 +90,8 @@ component accessors="true" {
 						step_3:true			
 					}
 				}	
+				// writeDump(out);
+				// writeDump(form);
 			} else {
 				var out = {
 					success:false,
@@ -81,7 +103,7 @@ component accessors="true" {
 				}
 			}
 		} else if(step == "3"){
-			var apps = new web.model.apps();
+			var apps = new web.model.apps(Deploy);
 			apps.populate(arguments);
 			// writeDump(apps);
 			// abort;
@@ -89,7 +111,9 @@ component accessors="true" {
 				var out = {
 					success:true,
 					data:{
-						next_step:"/index.cfm/apps/new",
+						balancer_options:apps.getBalancerOptions(),
+						image_options:apps.getImageOptions(),	
+						next_step:"/index.cfm/apps",						
 						step:"4",
 						step_1_complete:true,
 						step_2_complete:true,
@@ -108,18 +132,17 @@ component accessors="true" {
 				}
 			}
 		} else if(step == "4"){
-			forward
-			template="/index.cfm/apps" ;
+			// writeDump(form);
+			// abort;
+			// forward
+			// template="/index.cfm/apps" ;
 		}
 		else {
 			var out = {
-					success:true,
-					data:{
-						next_step:"/index.cfm/apps/new##balancer",
-						step:"1",
-						step_1:true			
-					}
+					success:false,
+					message:"Invalid request"
 				}	
+			return out;
 		}
 
 		for(var key in arguments){
@@ -140,7 +163,10 @@ component accessors="true" {
 
 				}
 			},
-			versions:{semver:{}}
+			versions:{semver:{}},
+			defaultImage:{
+				imageSettings:{}
+			}
 		});
 		return out;
 	}
@@ -159,16 +185,26 @@ component accessors="true" {
 	public struct function create( required name,
 								   required domain_name,
 								   required provider="sample",
-								   goto_success = "/index.cfm") {
+								   image_name,
+								   image={},
+								   goto_success = "/index.cfm",
+								   back=false) {
 		
-
+		// writeDump(arguments);
+		// abort;
 		var Deploy = variables.fw.getDeploy();
 		transaction {
 			var app = Deploy.createApp(name, domain_name, provider);
 			entitySave(app);
 			transaction action="commit";			
 		}
-		// abort;
+
+		if(!image.isEmpty()){
+			transaction {
+				app.createImage(image_name, image)
+				transaction action="commit";				
+			}
+		}		
 
 		var data = {
 			success:true,
