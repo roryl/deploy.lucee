@@ -17,12 +17,25 @@ component{
 
 	// this.mappings["/deploy"] = getDirectoryFromPath( get)
 	
-	this.datasources["deploy"] = {
-		  class: 'org.gjt.mm.mysql.Driver'
-		, connectionString: 'jdbc:mysql://192.168.33.10:3306/deploy?useUnicode=true&characterEncoding=UTF-8&useLegacyDatetimeCode=false&allowMultiQueries=true'
-		, username: 'deploy'
-		, password: "123456"
-	};
+	if(structKeyExists(url,"h2")){
+		this.datasources["deploy"] = {
+			  class: 'org.h2.Driver'
+			, connectionString: 'jdbc:h2:/var/www/deploy.lucee/deploy/deploy;MODE=MySQL'
+			, username: 'deploy'
+			, password: "encrypted:c4e21bb2a5952c1f5d2a255bca86053bcba2a9b6e1411194"
+		};		
+
+	} else {
+		this.datasources["deploy"] = {
+			  class: 'org.gjt.mm.mysql.Driver'
+			, connectionString: 'jdbc:mysql://192.168.33.10:3306/deploy?useUnicode=true&characterEncoding=UTF-8&useLegacyDatetimeCode=false&allowMultiQueries=true'
+			, username: 'deploy'
+			, password: "123456"
+		};
+		this.ormsettings.dialect = "MySQLwithInnoDB";	
+		
+	}
+
 
 	this.datasource = "deploy";
 	this.ormenabled = true;
@@ -31,7 +44,6 @@ component{
 	this.ormsettings.logsql="true";
 	this.ormsettings.flushAtRequestEnd = false;
 	this.ormsettings.autoManageSession=false;
-	this.ormsettings.dialect = "MySQLwithInnoDB";
 	// any orm definitions go here.
 
 	// request start

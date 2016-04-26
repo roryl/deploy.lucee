@@ -66,11 +66,17 @@ component persistent="true" table="app" discriminatorColumn="app_type" {
 		}
 	}
 
-	public function createInstance(version=this.getCurrentVersion()){
+	public Throwable function createInstance(version=this.getCurrentVersion()){
 
 		var version = arguments.version;
 		var provider = this.getProviderImplemented();
-		var providerMessage = provider.createInstance();
+		var Image = this.getDefaultImage();
+
+		if(isNull(Image)){
+			return new throwable("This app did not have a default image set, cannot create an instance without an image");
+		}
+
+		var providerMessage = provider.createInstance(Image.getName(), Image.getSettingsAsStruct());
 
 		if(providerMessage.isSuccess()){			
 			var instance = entityNew("instance", {version:version});
@@ -88,7 +94,7 @@ component persistent="true" table="app" discriminatorColumn="app_type" {
 			instance.setStatus("running");
 		}
 
-		return instance;
+		return new throwable(value=instance);
 	}
 
 	public function createImage(required string name, required struct settings){

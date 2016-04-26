@@ -5,7 +5,7 @@ component {
 		return this;
 	}
 
-	public providerMessage function createInstance(){
+	public providerMessage function createInstance(required string name, required struct imageOptions){
 
 		var vm = {
 		  "droplet": {
@@ -149,8 +149,8 @@ component {
 	public function getImageOptions(){
 		var out = [
 			{
-				name:"Operating System",
-				id:"os",
+				name:"Base Image",
+				id:"base_image",
 				options:[
 
 					{

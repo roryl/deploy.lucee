@@ -17,12 +17,18 @@ component extends=""{
 
 	// executes before every test case
 	function setup( currentMethod ){
-		query name="drop"{ 
-			echo("use deploy; ");
-			echo("drop database deploy; ");
-			echo("create database deploy; ");
-			echo("use deploy; ");
-		}		
+		if(structKeyExists(url,"h2")){			
+			query name="drop"{
+				echo("DROP ALL OBJECTS;");
+			}			
+		} else {
+			query name="drop"{ 
+				echo("use deploy; ");
+				echo("drop database deploy; ");
+				echo("create database deploy; ");
+				echo("use deploy; ");
+			}		
+		}	
 		ORMReload();
 	}
 

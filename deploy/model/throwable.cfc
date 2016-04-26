@@ -4,7 +4,7 @@
  */
 component {
 
-	public function init(required message="", value){
+	public function init(required string message="", value){
 
 		variables.message = arguments.message;
 		variables.callerChecked = false;

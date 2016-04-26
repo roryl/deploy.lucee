@@ -17,12 +17,18 @@ component extends=""{
 
 	// executes before every test case
 	function setup( currentMethod ){
-		query name="drop"{ 
-			echo("use deploy; ");
-			echo("drop database deploy; ");
-			echo("create database deploy; ");
-			echo("use deploy; ");
-		}		
+		if(structKeyExists(url,"h2")){			
+			query name="drop"{
+				echo("DROP ALL OBJECTS;");
+			}			
+		} else {
+			query name="drop"{ 
+				echo("use deploy; ");
+				echo("drop database deploy; ");
+				echo("create database deploy; ");
+				echo("use deploy; ");
+			}		
+		}	
 		ORMReload();
 	}
 
@@ -87,9 +93,17 @@ component extends=""{
 		transaction {
 			var app = createApp();		
 			var version = new ormTest().createVersion();
-			var version2 = entityNew("version", {semver: new semver("0.0.1")})
+			var version2 = entityNew("version", {semver: new semver("0.0.1")});
 			entitySave(version2);
-			var instance = app.createInstance();
+			app.createImage("my image", {});
+
+			var instanceThrowable = app.createInstance();
+			if(!instanceThrowable.threw()){
+				var instance = instanceThrowable.get();
+			} else {
+				instanceThrowable.rethrow();
+			}
+
 			entitySave(instance);
 			app.getBalancer().addInstance(instance);
 			app.addVersion(version);
@@ -127,7 +141,11 @@ component extends=""{
 
 		transaction {
 			var app = createApp();
-			var instance = app.createInstance();
+			app.createImage("my image", {})
+			var instanceThrowable = app.createInstance();
+			if(!instanceThrowable.threw()){
+				instance = instanceThrowable.get();
+			}
 			var balancer = app.createBalancer();
 			expect(instance).toBeInstanceOf("instance");
 			expect(balancer.hasInstance(instance)).toBeFalse();	
