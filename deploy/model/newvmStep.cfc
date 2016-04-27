@@ -10,15 +10,20 @@ component persistent="true" extends="migrationStep" discriminatorValue="newvm" {
 		var provider = App.getProviderImplemented();
 		var Version = Migration.getVersionTo();
 
-		var Instance = App.createInstance(Version);
-		this.setNewInstance(instance);
-		Migration.addInstance(instance);
-		instance.setMigration(Migration);
-		var smokeResult = instance.smokeTest();
-		if(smokeResult){
-			return true;
+		var InstanceThrowable = App.createInstance(Version);
+		if(InstanceThrowable.threw()){
+			InstanceThrowable.rethrow();
 		} else {
-			return false;
-		}		
+			var Instance = InstanceThrowable.get();	
+			this.setNewInstance(instance);
+			Migration.addInstance(instance);
+			instance.setMigration(Migration);
+			var smokeResult = instance.smokeTest();
+			if(smokeResult){
+				return true;
+			} else {
+				return false;
+			}		
+		}
 	}
 }

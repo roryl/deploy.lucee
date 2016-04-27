@@ -33,11 +33,17 @@ component extends=""{
 
 		transaction {
 			var app = createApp();
+			var image = app.createImage("my image", {});
 			entitySave(app);
 			var balancer = app.createBalancer();
-			var instance = app.createInstance();
-			balancer.addInstance(instance);
-			balancer.start();			
+			var instanceThrowable = app.createInstance();
+			if(instanceThrowable.threw()){
+				instanceThrowable.rethrow();
+			} else {
+				balancer.addInstance(instanceThrowable.get());
+				balancer.start();							
+			}
+
 		}
 
 	}
