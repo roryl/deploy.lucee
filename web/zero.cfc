@@ -107,7 +107,6 @@ component extends="one" {
 	  { method = 'delete', httpMethods = [ '$POST' ], includeId = true, routeSuffic = '/delete' }
 	];
 
-	
 	loadControllers();
 	/**
 	 * Createa a default RESTful route for each controller present
@@ -136,14 +135,14 @@ component extends="one" {
 	}
 
 	public function after( rc ){
-		if(structKeyExists(this,"result")){
-			if(isNull(request._zero.controllerResult)){
-				rc = result({});
-			} else {
-				rc = result(request._zero.controllerResult);
-			}
-			// rc = result(((isNull(request._zero.controllerResult))?: request._zero.controllerResult));			
-		}
+		// if(structKeyExists(this,"result")){
+		// 	if(isNull(request._zero.controllerResult)){
+		// 		rc = result({});
+		// 	} else {
+		// 		rc = result(request._zero.controllerResult);
+		// 	}
+		// 	// rc = result(((isNull(request._zero.controllerResult))?: request._zero.controllerResult));			
+		// }
 
 		if(isNull(request._zero.controllerResult)){
 			if(variables.zero.throwOnNullControllerResult){
@@ -164,6 +163,20 @@ component extends="one" {
 			break;
 
 			default:
+
+				if(structKeyExists(rc,"goto")){
+					var goto = rc.goto;
+					rc = {}
+					if(!isNull(request._zero.controllerResult)){
+						for(var key in request._zero.controllerResult){
+							rc[key] = request._zero.controllerResult[key];
+						}					
+					}
+					
+					session.append(rc);
+					location url="#goto#" addtoken="false";
+				}				
+				
 				//Clear out the RC scope because only the result from the controller will be passed
 				//to the view
 				rc = {}
@@ -173,10 +186,6 @@ component extends="one" {
 					}					
 				}
 				request.context = rc;		
-
-				if(structKeyExists(rc,"goto")){
-					location url="#rc.goto#" addtoken="false";
-				}
 
 			break;			
 		}				
@@ -191,6 +200,10 @@ component extends="one" {
 
 		finalOutput = response(finalOutput);
 		writeOutput(finalOutput);
+
+		if(structKeyExists(session,"previousResponse")){
+			structDelete(session,"previousResponse");
+		}
 	}
 
 	/*

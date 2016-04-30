@@ -1,7 +1,10 @@
 component accessors="true" {
+
+	property name="id";
 	property name="name";	
 	property name="submit";	
-	property name="image";
+	property name="image_settings";
+	property name="base_script";
 
 	variables.errors = [];
 
@@ -12,8 +15,13 @@ component accessors="true" {
 	public function populate(required struct params){
 
 		var params = arguments.params
+
 		for(var key in params){
-			evaluate("this.set#Key#(params[key])");
+			if(isNull(params[key])){
+				evaluate("this.set#Key#('')");
+			} else {
+				evaluate("this.set#Key#(params[key])");			
+			}
 		}
 
 	}
@@ -38,6 +46,7 @@ component accessors="true" {
 		if(name == ""){
 			addError("Name cannot be empty");
 		}
+		variables.name = arguments.name;
 	}	
 
 	public function getProviderImplemented(){
@@ -65,9 +74,9 @@ component accessors="true" {
 		//Decorate options with values that have been selected
 		for(var option in options){
 			// writeDump(option);
-			if(structKeyExists(this.getImage(),option.id)){
+			if(structKeyExists(this.getImage_settings(),option.id)){
 				for(var values in option.options){
-					if(this.getImage()[option.id] == values.id){
+					if(this.getImage_settings()[option.id] == values.id){
 						values.selected = true;
 					}
 				}

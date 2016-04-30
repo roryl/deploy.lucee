@@ -81,6 +81,20 @@ component extends=""{
 		expect(image.getImageSettingValueByKey("size").get()).toBe("512mb");
 	}
 
+	function createInstanceTest(){
+
+		transaction {
+			var app = new appTest().createApp();
+			var Image = app.createImage("test", {os:"centOS", size:"512mb", region:"nyc1"});
+			var InstanceThrowable = Image.createInstanceTest();
+			transaction action="commit";
+		}
+
+		expect(InstanceThrowable.threw()).toBeFalse();		
+		expect(arrayLen(Image.getInstanceTests())).toBe(1);
+		expect(InstanceThrowable.get().getImageTest() === Image).toBeTrue();
+	}
+
 	function createSnapshotTest(){
 
 		transaction {

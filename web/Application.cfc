@@ -62,11 +62,15 @@ component extends="zero" {
 	this.ormenabled = true;
 	this.ormsettings.dialect = "MySQLwithInnoDB";
 
+	this.sessionManagement = true;
+	this.sessionStorage = "cookie";
+
 	// variables.framework.routes = [
 	// 	{ "$RESOURCES" = { resources = "apps"} },
 	// ]
 
-
+	variables.framework.routes.append({'$POST/images/:id/deploy*' = '/images/deploy/id/:id' });
+	variables.framework.routes.append({'$GET/images/:id/deploy*' = '/images/deploy/id/:id' });
 
 	/**
 	 * Used to manipulate request variables before they are passed to controllers.

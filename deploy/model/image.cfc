@@ -4,6 +4,8 @@ component persistent="true" table="image" {
 	property name='baseScript' type='string' sqltype='text';
 	property name='versionScript' type='string' sqltype='text';	
 	property name="app" fieldtype="many-to-one" cfc="app" fkcolumn="app_id" inverse="true";
+	property name="instanceTests" fieldtype="one-to-many" cfc="instance" fkcolumn="instance_test_image_id" singularname="instanceTest";
+	property name="instances" fieldtype="one-to-many" cfc="instance" fkcolumn="instance_image_id" singularname="instance";
 	property name="imageSettings" fieldtype="one-to-many" cfc="imageSetting" fkcolumn="image_id" singularname="imageSetting";
 	property name="snapshots" fieldtype="one-to-many" cfc="image" fkcolumn="snapshot_image_id" singularname="snapshot";
 	property name="baseImage" fieldtype="many-to-one" cfc="image" fkcolumn="snapshot_image_id" inverse="true";
@@ -44,11 +46,49 @@ component persistent="true" table="image" {
 		}
 	}
 
+
+	public boolean function putAllSettingsKeyValues(required struct settings){
+		var settings = arguments.settings;		
+		for(var setting in settings){
+			this.putImageSettingKeyValue(key=setting, value=settings[setting]);
+		}
+		return true;
+	}
+
 	public boolean function hasBaseScript(){
 		if(trim(this.getBaseScript()).len() GT 0){
 			return true;
 		} else {
 			return false;
+		}
+	}
+
+	public Throwable function createInstanceTest(){
+
+		var Image = this;
+		var Provider = this.getApp().getProviderImplemented();
+		var imageName = this.getName();
+		var TestInstance = entityNew("instance");
+		entitySave(TestInstance);
+		var testId = TestInstance.getId();
+		var finalInstanceName = "#imageName#_#testId#";
+		var ProviderMessage = Provider.createInstance(finalInstanceName, Image.getSettingsAsStruct());
+
+		if(providerMessage.isSuccess()){
+			this.addInstanceTest(TestInstance);
+			TestInstance.setImageTest(this);
+
+			var data = providerMessage.getData();
+			TestInstance.setInstanceId(data.instanceId);		
+			TestInstance.setName(data.name);
+			TestInstance.setHost(data.host);
+			TestInstance.setVcpus(data.vcpus);
+			TestInstance.setMemory(data.memory);
+			TestInstance.setDisk(data.disk);
+			TestInstance.setStatus("running");
+			return new throwable(value=TestInstance);
+		} else {
+			throw("Not yet implemented. Need to handle provider messages");
 		}
 	}
 
@@ -66,6 +106,8 @@ component persistent="true" table="image" {
 		var ProviderMessage = Provider.createInstance(tempName, this.getSettingsAsStruct());
 
 		if(ProviderMessage.isSuccess()){
+			
+		} else {
 			
 		}
 

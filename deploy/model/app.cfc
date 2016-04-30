@@ -4,7 +4,7 @@ component persistent="true" table="app" discriminatorColumn="app_type" {
 	property name="domainName";
 	property name="provider";
 	property name="status" persistent="false";
-	property name="deploy" fieldtype="many-to-one" cfc="deploy" fkcolumn="deploy_id" inverse="true";
+	property name="deploy" fieldtype="many-to-one" cfc="deploy" fkcolumn="deploy_id" inverse="true";	
 	property name="instances" fieldtype="one-to-many" cfc="instance" fkcolumn="app_instance_id" singularname="instance";
 	property name="balancer" fieldtype="one-to-one" cfc="balancer" fkcolumn="app_balancer_id";	
 	property name="versions" fieldtype="one-to-many" cfc="version" fkcolumn="app_version_id" singularname="version";	
@@ -92,10 +92,11 @@ component persistent="true" table="app" discriminatorColumn="app_type" {
 			instance.setMemory(data.memory);
 			instance.setDisk(data.disk);
 			instance.setStatus("running");
+			return new throwable(value=instance);
+		} else {
+			throw("Not yet implemented. Need to handle provider messages");
 		}
-
-		return new throwable(value=instance);
-	}
+	}	
 
 	public function createImage(required string name, required struct settings){
 
