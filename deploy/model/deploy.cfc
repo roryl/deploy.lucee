@@ -43,6 +43,43 @@ component persistent="true" table="deploy" discriminatorColumn="deploy_type" {
 		}		
 	}
 
+	public Optional function getBalancerById(required numeric id){
+		var Balancer = entityLoad("balancer",{id:id}, true);
+		if(isNull(balancer)){
+			return new Optional();
+		} else {
+			if(balancer.getApp().getDeploy() === this){
+				return new Optional(Balancer);
+			} else {
+				return new Optional();
+			}
+		}		
+	}
+
+	public Optional function getInstanceById(required numeric id){
+		var Instance = entityLoad("instance", {id:id}, true);
+		if(isNull(Instance)){
+			return new Optional();
+		} else {
+			if(Instance.getApp().getDeploy() === this){
+				return new Optional(Instance);
+			} else {
+				return new Optional();
+			}
+		}
+	}
+
+	public Throwable function deleteInstance(required instance Instance){
+
+		var Instance = arguments.instance;
+		if(Instance.hasBalancer()){
+			return new throwable("Cannot delete an instance which is actively being balanced. You must remove it from the load balancer first");
+		} else {
+			entityDelete(Instance);
+			return new throwable(value=true);
+		}
+	}
+
 	public Optional function getProviderImplementedByName(required string name){
 
 		var name = arguments.name;

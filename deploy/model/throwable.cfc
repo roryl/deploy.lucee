@@ -48,6 +48,14 @@ component {
 		}
 	}
 
+	public function orRethrow(){
+		if(this.threw()){
+			this.reThrow();
+		} else {
+			return get();
+		}
+	}
+
 	public function getMessage(){
 		return variables.message;
 	}

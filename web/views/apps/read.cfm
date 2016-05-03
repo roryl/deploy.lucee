@@ -59,34 +59,41 @@
 					<div class="panel-body">
 						<div>
 							<h4>HA Load Balancer</h4>
-							
+							{{#if data.balancer.deployed}}							
 							<table class="table">
 								<thead>
 									<tr>
-										<td>id</td>
+										<td>Instance ID</td>
 										<td>status</td>
-										<td>Version</td>
-										<td>Actions</td>
+										<td>Primary?</td>																				
 									</tr>
 								</thead>
 								<tbody>
+									{{#each data.balancer.instances}}
 									<tr>
-										<td></td>
-										<td></td>
-										<td></td>
-										<td></td>
+										<td>{{instance_id}}</td>
+										<td>{{status}}</td>
+										<td>{{is_primary}}</td>										
 									</tr>
+									{{/each}}
 								</tbody>
-							</table>
-							<hr/>
+							</table>							
+							{{else}}
+							<p>Each application requires a load balancer to deploy instances behind. Your load balancer is not yet configured. Once the load balancer is setup you will be able to deploy instances. This will create instances at the provider.</p>
+							<form action="/index.cfm/balancers/{{data.balancer.id}}/deploy" method="post">
+								<input type="hidden" name="goto" value="/index.cfm/apps/{{data.id}}" />
+								<input type="hidden" name="preserve_response" value="balancer_deploy" />								
+								<button class="btn btn-primary btn-depoy"><i class="glyphicon glyphicon-off"></i> Deploy Load Balancer</button>
+							</form>
+							{{/if}}
 						</div>								
 					</div>
 				</div>
+				{{#if data.balancer.deployed}}
 				<div class="panel panel-default">
 					<div class="panel-body">
 						<div>
-							<h4>Active Balanced Instances <span class="btn btn-primary"><i class="glyphicon glyphicon glyphicon-plus-sign"></i> Add Instance</span></h4>
-							
+							<h4>Active Balanced Instances <span class="btn btn-primary"><i class="glyphicon glyphicon glyphicon-plus-sign"></i> Add Instance</span></h4>							
 							<table class="table">
 								<thead>
 									<tr>
@@ -129,7 +136,8 @@
 							</table>
 						</div>  		
 					</div>
-				</div>	
+				</div> <!--- Instances Panel --->
+				{{/if}} <!---/data.balancer --->
 			</div>
 		</div>
 	</article>

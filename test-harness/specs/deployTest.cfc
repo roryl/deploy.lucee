@@ -89,6 +89,30 @@ component extends=""{
 		expect(tryImage.exists()).toBeFalse();
 	}
 
+	function getBalancerIdTest(){
+
+		transaction {
+			var deploy = new ormTest().createDeploy();
+			entitySave(deploy);
+			var app = deploy.createApp("sampleapp", "sampleapp.com", "sample");
+			entitySave(app);
+			ORMFlush();
+			var Balancer = app.createBalancer({});
+			transaction action="commit";
+		}
+
+		// writeDump(Balancer);
+		// abort;
+
+		var getBalancer = deploy.getBalancerById(Balancer.getId());
+		expect(getBalancer).toBeInstanceOf("optional");
+		expect(getBalancer.exists()).toBeTrue();
+		expect(getBalancer.get() === Balancer).toBeTrue();
+
+		var tryBalancer = deploy.getBalancerById(2);
+		expect(tryBalancer.exists()).toBeFalse();
+	}
+
 	function getProviderImplementedByNameTest(){
 
 		var deploy = new ormTest().createDeploy();
@@ -103,6 +127,25 @@ component extends=""{
 		expect(provider).toBeInstanceOf("Optional");
 		expect(provider.exists()).toBeFalse();
 
+	}
+
+	function deleteNotBalancedInstanceTest(){		
+		var Instance = new appTest().createInstanceTest();
+		var deploy = Instance.getApp().getDeploy();
+		var deployThrowable = deploy.deleteInstance(Instance);		
+		expect(deployThrowable.threw()).toBeFalse();
+		expect(deployThrowable.get()).toBeTrue();
+	}
+
+	function deleteBalancedInstanceTest(){		
+		var Instance = new appTest().createInstanceTest();
+		var balancer = Instance.getApp().createBalancer({});
+		balancer.addInstance(Instance);
+		Instance.setBalancer(balancer);		
+		var deploy = Instance.getApp().getDeploy();
+		var deployThrowable = deploy.deleteInstance(Instance);		
+		expect(deployThrowable.threw()).toBeTrue();
+		expect(deployThrowable.getMessage()).toBe("Cannot delete an instance which is actively being balanced. You must remove it from the load balancer first");	
 	}
 
 	

@@ -2,7 +2,7 @@
 * My xUnit Test
 */
 import deploy.model.semver;
-component extends=""{
+component extends="testbox.system.baseSpec"{
 	
 /*********************************** LIFE CYCLE Methods ***********************************/
 
@@ -43,7 +43,7 @@ component extends=""{
 	function createApp(){
 		var app = new ormTest().createDeploy().createApp("sampleapp", "sampleapp.com", "sample");
 		entitySave(app)
-		app.createBalancer();
+		app.createBalancer({});
 		return app;
 	}
 
@@ -130,11 +130,12 @@ component extends=""{
 	function createBalancerTest(){
 		transaction {
 			var app = createApp();
-			var balancer = app.createBalancer();
+			var balancer = app.createBalancer({});
 			expect(balancer).toBeInstanceOf("balancer");
 			expect(balancer.isStopped()).toBeTrue();
 			transaction action="commit";
 		}
+		return balancer;
 	}
 
 	function createInstanceTest(){
@@ -146,12 +147,12 @@ component extends=""{
 			if(!instanceThrowable.threw()){
 				instance = instanceThrowable.get();
 			}
-			var balancer = app.createBalancer();
+			var balancer = app.createBalancer({});
 			expect(instance).toBeInstanceOf("instance");
 			expect(balancer.hasInstance(instance)).toBeFalse();	
 			transaction action="commit";			
 		}
-
+		return Instance;
 	}
 
 	function createImageTest(){

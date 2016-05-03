@@ -68,8 +68,16 @@ component persistent="true" table="image" {
 		var Image = this;
 		var Provider = this.getApp().getProviderImplemented();
 		var imageName = this.getName();
-		var TestInstance = entityNew("instance");
-		entitySave(TestInstance);
+		var InstanceThrowable = this.getApp().createInstance(image=this);
+
+		if(InstanceThrowable.threw()){
+			return new throwable(InstanceThrowable.getMessage());
+		} else {
+			TestInstance = InstanceThrowable.get();
+		}
+		// TestInstance = entityNew("instance");
+		// entitySave(TestInstance);
+
 		var testId = TestInstance.getId();
 		var finalInstanceName = "#imageName#_#testId#";
 		var ProviderMessage = Provider.createInstance(finalInstanceName, Image.getSettingsAsStruct());

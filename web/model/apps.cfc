@@ -69,15 +69,26 @@ component accessors="true" {
 
 	public function getBalancerOptions(){
 		var options = getProviderImplemented().get().getBalancerOptions();
-
+		// writeDump(options);
+		// writeDump(this.getBalancer());
+		// abort;
 		//Decorate options with the selected value, this is for the view
-		if(!this.getBalancer() == ""){
-			for(var option in options){
-				if(option.id == this.getBalancer()){
-					option.selected = true;
+		
+		for(var option in options){
+
+			if(structKeyExists(this.getBalancer(),option.id)){
+
+				for(var values in option.options){
+
+					if(this.getBalancer()[option.id] == values.id){
+						values.selected = true;
+					}
 				}
+
+				
 			}
-		}	
+		}
+			
 		return options;
 	}
 

@@ -78,7 +78,7 @@ component {
 
 	}
 
-	public function createLoadBalancer(){
+	public providerMessage function deployLoadBalancer(required struct balancerOptions){
 		var vm = {
 		  "droplet": {
 		    "id": 3164494,
@@ -129,14 +129,24 @@ component {
 
 		var message = new providerMessage(argumentCollection={
 			success:true,
-			data:{
-				id:vm.droplet.id,
-				name:vm.droplet.name,
-				memory:vm.droplet.memory,
-				vcpus:vm.droplet.vcpus,
-				disk:vm.droplet.disk,
-				host:"1.2.3.5"
-			},
+			data:[
+				{
+					instanceId:vm.droplet.id,
+					name:vm.droplet.name,
+					memory:vm.droplet.memory,
+					vcpus:vm.droplet.vcpus,
+					disk:vm.droplet.disk,
+					host:"1.2.3.5"
+				},
+				{
+					instanceId:vm.droplet.id,
+					name:vm.droplet.name,
+					memory:vm.droplet.memory,
+					vcpus:vm.droplet.vcpus,
+					disk:vm.droplet.disk,
+					host:"1.2.3.6"
+				}
+			],
 			originalResponse:vm
 		})
 		return message;
@@ -223,13 +233,19 @@ component {
 
 		out = [
 			{
-				id:"single_mod_proxy",
-				name:"Single Mod Proxy"
-			},
-			{
-				id:"ha_mod_proxy",
-				name:"HA Mod Proxy"
-			}			
+				name:"type",
+				id:"type",
+				options:[
+					{
+						id:"single_mod_proxy",
+						name:"Single Mod Proxy"
+					},
+					{
+						id:"ha_mod_proxy",
+						name:"HA Mod Proxy"
+					}			
+				]
+			}
 		]
 		return out;
 	}

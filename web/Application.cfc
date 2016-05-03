@@ -65,12 +65,16 @@ component extends="zero" {
 	this.sessionManagement = true;
 	this.sessionStorage = "cookie";
 
+	this.clientManagement = true;
+	this.clientStorage = "cookie";
+
 	// variables.framework.routes = [
 	// 	{ "$RESOURCES" = { resources = "apps"} },
 	// ]
 
 	variables.framework.routes.append({'$POST/images/:id/deploy*' = '/images/deploy/id/:id' });
-	variables.framework.routes.append({'$GET/images/:id/deploy*' = '/images/deploy/id/:id' });
+	variables.framework.routes.append({'$GET/images/:id/deploy*' = '/images/deploy/id/:id' });	
+	variables.framework.routes.append({'$POST/balancers/:id/deploy*' = '/balancers/deploy/id/:id' });	
 
 	/**
 	 * Used to manipulate request variables before they are passed to controllers.

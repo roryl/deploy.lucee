@@ -25,6 +25,7 @@
 	<script src="/assets/admin/js/theDocs.all.min.js"></script>
 	<script src="/assets/admin/js/custom.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/2.2.2/isotope.pkgd.js"></script>
+	<script src="/assets/admin/js/jquery.smoothState.min.js"></script>
 <!--- 	<link href="/assets/admin/vendors/bootstrap-switch/css/bootstrap3/bootstrap-switch.min.css" rel="stylesheet">	
 	<script src="/assets/admin/vendors/bootstrap-switch/js/bootstrap-switch.min.js"></script> --->
   </head>
@@ -71,7 +72,7 @@
 	</header>
 
 
-	<main class="container">
+	<main id="main" class="container">
 	  #body#
 	</main>
 
@@ -97,7 +98,49 @@
 	<!-- END Footer -->
 
 	<!-- Scripts -->
-	
+	<script type="text/javascript">
+
+		// Keeps scroll position on postbacks
+		// http://codepen.io/patrickkahl/pen/KFmAb
+		;(function($){  
+		    /**
+		     * Store scroll position for and set it after reload
+		     *
+		     * @return {boolean} [loacalStorage is available]
+		     */
+		    $.fn.scrollPosReaload = function(){
+		        if (localStorage) {
+		            var posReader = localStorage["posStorage"];
+		            if (posReader) {
+		                $(window).scrollTop(posReader);
+		                localStorage.removeItem("posStorage");
+		            }
+		            $(this).click(function(e) {
+		                localStorage["posStorage"] = $(window).scrollTop();
+		            });
+
+		            return true;
+		        }
+
+		        return false;
+		    }
+		    
+		    /* ================================================== */
+
+		    $(document).ready(function() {
+		    	// alert('test');
+		        // Feel free to set it for any element who trigger the reload
+		        // $('select').scrollPosReaload();
+		        $('form').scrollPosReaload();
+
+		        // $('##main').smoothState();
+
+		    });
+		  
+		}(jQuery));  
+
+
+	</script>
 	
 	
   </body>

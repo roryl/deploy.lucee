@@ -86,7 +86,7 @@ component output="false" displayname=""  {
 							{
 								if(prop.fieldType IS "one-to-one" OR prop.fieldType IS "many-to-one")
 								{
-									out[camelToUnderscore(prop.name)] = {};
+									out[camelToUnderscore(prop.name)] = "";
 								} else if(prop.fieldType IS "many-to-many" OR prop.fieldType IS "one-to-many"){
 
 									if(structKeyExists(prop,"type") AND prop.type IS "struct")

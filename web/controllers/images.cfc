@@ -16,9 +16,8 @@ component accessors="true" {
 	}
 
 	public struct function read( required numeric id,
-								 ) {
-    	
-		writeDump(session);
+								 deployed_response={}
+								 ) {   	        
 
     	var Deploy = variables.fw.getDeploy();
     	var Image = Deploy.getImageById(id);
@@ -40,15 +39,14 @@ component accessors="true" {
 	    	var out = {
 	    		"success":true,
 	    		"data":{
-	    			"id":image.getId(),
-	    			"name":image.getName(),
+	    			"image":new serializer().serializeEntity(Image, {app:{},instanceTests:{}}),
 	    			"image_options":Images.getImageOptions(),
-	    			"base_script":Image.getBaseScript()
+	    			"base_script":Image.getBaseScript(),
+                    "deployed_response":deployed_response,                    
 	    		}
 	    	}
 	    	return out;    		
     	}
-
 	}
 
 	public struct function update( required numeric id,
@@ -57,6 +55,7 @@ component accessors="true" {
 								 required string name ) {
     	// writeDump(arguments);
     	// abort;
+        writeLog(file="deploy", text="update #now()#");
     	var Deploy = variables.fw.getDeploy();    
 
     	var ImageOptional = Deploy.getImageById(id);
@@ -107,17 +106,22 @@ component accessors="true" {
     		throw("Image not found");
     	} else {
     		var Image = ImageOptional.get();
-    		var InstanceThrowable = Image.createInstanceTest();
-    		if(InstanceThrowable.threw()){
-    			InstanceThrowable.rethrow();
-    		} else {
-    			out = {
-    				"action":"deploy",
-    				"success":true,
-    				"message":"The instance was successfully created"
-    			} 
-    			return out;   			
-    		}
+            transaction {
+        		var InstanceThrowable = Image.createInstanceTest();
+                if(InstanceThrowable.threw()){
+                    transaction action="rollback";
+                    InstanceThrowable.rethrow();
+                } else {
+                    transaction action="commit";
+                    out = {
+                        "action":"deploy",
+                        "success":true,
+                        "message":"The test instance was successfully created",
+                        "data":new serializer().serializeEntity(InstanceThrowable.get())
+                    };
+                    return out;         
+                }              
+            }    		
     	}
 	}
 	

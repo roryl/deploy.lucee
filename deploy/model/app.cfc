@@ -53,10 +53,11 @@ component persistent="true" table="app" discriminatorColumn="app_type" {
 		}
 	}
 
-	public function createBalancer(){
+	public Balancer function createBalancer(required struct settings){
 		var balancer = entityNew("balancer");
 		entitySave(balancer);
 		this.setBalancer(balancer);
+		balancer.setApp(this);
 		return balancer;
 	}
 
@@ -66,14 +67,14 @@ component persistent="true" table="app" discriminatorColumn="app_type" {
 		}
 	}
 
-	public Throwable function createInstance(version=this.getCurrentVersion()){
+	public Throwable function createInstance(version=this.getCurrentVersion(), image=this.getDefaultImage()){
 
 		var version = arguments.version;
 		var provider = this.getProviderImplemented();
-		var Image = this.getDefaultImage();
+		var Image = arguments.image;
 
 		if(isNull(Image)){
-			return new throwable("This app did not have a default image set, cannot create an instance without an image");
+			return new throwable("This app did not have a default image set or an image was not passed in, cannot create an instance without an image");
 		}
 
 		var providerMessage = provider.createInstance(Image.getName(), Image.getSettingsAsStruct());

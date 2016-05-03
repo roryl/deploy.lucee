@@ -104,7 +104,7 @@ component extends="one" {
 	  { method = 'read', httpMethods = [ '$GET' ], includeId = true },
 	  { method = 'update', httpMethods = [ '$PUT','$PATCH', '$POST' ], includeId = true },
 	  { method = 'delete', httpMethods = [ '$DELETE' ], includeId = true },
-	  { method = 'delete', httpMethods = [ '$POST' ], includeId = true, routeSuffic = '/delete' }
+	  { method = 'delete', httpMethods = [ '$POST' ], includeId = true, routeSuffix = '/delete' }
 	];
 
 	loadControllers();
@@ -165,6 +165,11 @@ component extends="one" {
 			default:
 
 				if(structKeyExists(rc,"goto")){
+
+					if(structKeyExists(form,"preserve_response")){						
+						client[form.preserve_response] = request._zero.controllerResult;
+					}
+
 					var goto = rc.goto;
 					rc = {}
 					if(!isNull(request._zero.controllerResult)){
@@ -172,8 +177,21 @@ component extends="one" {
 							rc[key] = request._zero.controllerResult[key];
 						}					
 					}
+
+					if(goto contains ":"){
+						writeDump(goto);
+						variable = reReplaceNoCase(goto, "(.*):([A-Zaz\.]*)", "\2");
+						
+						tryNull = evaluate("isNull(rc.#variable#)");
+						if(tryNull){
+							throw("Value not found");
+						} else {
+							value = getVariable("rc.#variable#");
+							goto = replaceNoCase(goto, ":#variable#", value);
+						}
+
+					}					
 					
-					session.append(rc);
 					location url="#goto#" addtoken="false";
 				}				
 				
@@ -191,6 +209,10 @@ component extends="one" {
 		}				
 	}
 
+	private function extractVariables(required string){
+
+	}
+
 	function onRequest(){
 
 		var finalOutput = "";
@@ -201,9 +223,9 @@ component extends="one" {
 		finalOutput = response(finalOutput);
 		writeOutput(finalOutput);
 
-		if(structKeyExists(session,"previousResponse")){
-			structDelete(session,"previousResponse");
-		}
+		//Clear out the client at the end of the request
+		client = {};
+		structClear(client);		
 	}
 
 	/*
@@ -290,9 +312,14 @@ component extends="one" {
                 		request.context.headers = request._fw1.headers;
                 		
                 		for(var arg in args){
+                			
                 			if(structKeyExists(request.context,arg.name)){
                 				argsToPass[arg.name] = request.context[arg.name];
-                			}                			     
+                			}    
+
+                			if(structKeyExists(client,arg.name)){                			
+                				argsToPass[arg.name] = client[arg.name];
+                			}              			     
                 		}
 	                	request._zero.controllerResult = evaluate( 'cfc.#method#( argumentCollection = argsToPass)' );                		
                 	} else {

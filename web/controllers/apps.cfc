@@ -12,12 +12,13 @@ component accessors="true" {
 						domain_name="",
 						provider="",
 						step="0",
-						balancer,
+						balancer={},
 						submit=false,
 						image_name,
-						image=[],
+						image={},
 						back=false){
-
+		// writeDump(arguments);
+		// abort;
 		var submit = arguments.submit;
 		var back = arguments.back;
 		var step = arguments.step;
@@ -157,6 +158,8 @@ component accessors="true" {
 	private function serializeApp(required app){
 
 		var app = arguments.app;
+		// writeDump(app.getBalancer());
+		// abort;
 		var out = new serializer().serializeEntity(app, {
 			currentVersion:{
 				semver:{
@@ -166,6 +169,9 @@ component accessors="true" {
 			versions:{semver:{}},
 			defaultImage:{
 				imageSettings:{}
+			},
+			balancer:{
+				instances:{}
 			}
 		});
 		return out;
@@ -187,6 +193,7 @@ component accessors="true" {
 								   required provider="sample",
 								   image_name,
 								   image={},
+								   balancer={},
 								   goto_success = "/index.cfm",
 								   back=false) {
 		
@@ -206,9 +213,15 @@ component accessors="true" {
 			}
 		}		
 
+		if(!balancer.isEmpty()){
+			transaction {
+				app.createBalancer(balancer);
+				transaction action="commit";
+			}
+		}
+
 		var data = {
-			success:true,
-			goto:"/index.cfm/apps/#app.getId()#",
+			success:true,			
 			data:new serializer().serializeEntity(app)
 		}      
 		return data;
@@ -220,7 +233,7 @@ component accessors="true" {
     	var app = Deploy.getAppById(id);
     	if(app.exists()){
     		// writeDump(app.get().getCurrentVersion().getSemver());
-    		// abort;
+    		// abort;    		
     		result = {
     			"success":"true",
     			"data":serializeApp(app.get())

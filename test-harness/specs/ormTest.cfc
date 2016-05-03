@@ -116,6 +116,12 @@ component extends=""{
 		return entity;
 	}
 
+	function createBalancerSetting(){
+		var entity = entityNew("balancerSetting");
+		entitySave(entity);		
+		return entity;
+	}
+
 
 	/***** SINGLE ENTYT TESTS ********************************/
 

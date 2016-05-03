@@ -49,15 +49,16 @@
 								<a id="balancer"></a>
 								<h2>Select Balancer</h2>
 								<p>Each App needs a load balancer. Select one of the balancer options provider by {{data.provider}}</p>
+								{{#each data.balancer_options}}
 								<label for="domain_name">Balancers</label>
-								<select class="form-control" name="balancer" 
+								<select class="form-control" name="balancer.{{id}}" 
 									{{#if data.balancer}}value="{{data.balancer}}"{{/if}}
 									{{#unless data.step_2}}readonly{{/unless}}>
-
-									{{#each data.balancer_options}}
+										{{#each options}}
 										<option value="{{id}}" {{#if selected}}selected{{/if}}>{{name}}</option>
-									{{/each}}
+										{{/each}}
 								</select>
+								{{/each}}
 							</div>
 						</li>
 
@@ -140,7 +141,8 @@
 					<button type="submit" name="back" class="btn btn-default" value="true">Back</button>										
 					{{/unless}}
 
-					{{#if data.step_4}}
+					{{#if data.step_4}}	
+						<input type="hidden" name="goto" value="/index.cfm/apps/:data.id" />
 						<button type="submit" name="submit" class="btn btn-success" value="true">Create App</button>
 					{{else}}
 						<button type="submit" name="submit" class="btn btn-default" value="true">Next</button>

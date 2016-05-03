@@ -35,7 +35,7 @@ component extends=""{
 			var app = createApp();
 			var image = app.createImage("my image", {});
 			entitySave(app);
-			var balancer = app.createBalancer();
+			var balancer = app.createBalancer({});
 			var instanceThrowable = app.createInstance();
 			if(instanceThrowable.threw()){
 				instanceThrowable.rethrow();
