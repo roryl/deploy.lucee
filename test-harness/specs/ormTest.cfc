@@ -122,6 +122,12 @@ component extends=""{
 		return entity;
 	}
 
+	function createVersionSetting(){
+		var entity = entityNew("versionSetting");
+		entitySave(entity);		
+		return entity;
+	}
+
 
 	/***** SINGLE ENTYT TESTS ********************************/
 
@@ -185,6 +191,14 @@ component extends=""{
 
 	function createImageSettingTest(){
 		genericEntity("imageSetting");
+	}
+
+	function createBalancerSettingTest(){
+		genericEntity("balancerSetting");
+	}
+
+	function createVersionSettingTest(){		
+		genericEntity("versionsetting");		
 	}
 	
 	/***** RELATIONSHIP TESTS *******************************/
@@ -280,6 +294,14 @@ component extends=""{
 
 	function imageImageSettingRelationTest(){
 		genericOneToMany("image", "imageSetting");
+	}
+
+	function appVersionSettingRelationTest(){
+		genericOneToMany("app", "versionSetting");
+	}
+
+	function versionVersionSettingRelationTest(){
+		genericOneToMany("version", "versionSetting");
 	}
 	
 }
