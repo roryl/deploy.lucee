@@ -166,7 +166,8 @@ component extends="testbox.system.baseSpec"{
 		// writeDump(app.getImages());
 		expect(arrayLen(images)).toBe(1);
 		expect(arrayLen(images[1].getImageSettings())).toBe(3);
-		expect(app.getDefaultImage() === images[1]).toBeTrue();		
+		expect(app.getDefaultImage() === images[1]).toBeTrue();	
+		return image;
 	}
 
 	function createDefaultImageTest(){
@@ -186,29 +187,6 @@ component extends="testbox.system.baseSpec"{
 		expect(app.getDefaultImage() === images[2]).toBeFalse();
 		
 	}
-
-	function createVersionSettingTest(){
-
-		transaction {
-			var app = createApp();
-			var versionSetting = app.putVersionSetting("foo","bar","");
-			transaction action="commit";
-		}
-
-		expect(arrayLen(app.getVersionSettings())).toBe(1);
-		return versionSetting;
-	}
-
-	function createVersionSettingByIdTest(){
-		
-		versionSetting = createVersionSettingTest();
-		versionSettingOptional = versionSetting.getApp().getVersionSettingById(versionSetting.getId());
-		expect(versionSettingOptional).toBeInstanceOf("Optional");
-		expect(versionSettingOptional.get() === versionSetting).toBeTrue();		
-
-	}
-
-
 	
 	
 }

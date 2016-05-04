@@ -7,6 +7,7 @@ component persistent="true" table="image" {
 	property name="instanceTests" fieldtype="one-to-many" cfc="instance" fkcolumn="instance_test_image_id" singularname="instanceTest";
 	property name="instances" fieldtype="one-to-many" cfc="instance" fkcolumn="instance_image_id" singularname="instance";
 	property name="imageSettings" fieldtype="one-to-many" cfc="imageSetting" fkcolumn="image_id" singularname="imageSetting";
+	property name="versionSettings" fieldtype="one-to-many" cfc="versionSetting" fkcolumn="image_id" singularname="versionSetting";	
 	property name="snapshots" fieldtype="one-to-many" cfc="image" fkcolumn="snapshot_image_id" singularname="snapshot";
 	property name="baseImage" fieldtype="many-to-one" cfc="image" fkcolumn="snapshot_image_id" inverse="true";
 
@@ -53,6 +54,29 @@ component persistent="true" table="image" {
 			this.putImageSettingKeyValue(key=setting, value=settings[setting]);
 		}
 		return true;
+	}
+
+	public versionSetting function putVersionSetting(required string key, required string value, required string default){
+
+		var key = arguments.key;
+		var value = arguments.value;
+		var default = arguments.default;
+
+		var VersionSetting = entityLoad("versionSetting", {image:this, key:key}, true);
+		if(isNull(VersionSetting)){
+			var VersionSetting = entityNew("versionSetting");
+			entitySave(VersionSetting);
+			this.addVersionSetting(VersionSetting);
+			VersionSetting.setImage(this);
+		}
+		versionSetting.setKey(key);
+		versionSetting.setValue(value);
+		versionSetting.setDefault(default);
+		return versionSetting;
+	}
+
+	public Optional function getVersionSettingById(required numeric id){
+		return new Optional(entityLoad("versionSetting", {image:this, id:id}, true));
 	}
 
 	public boolean function hasBaseScript(){

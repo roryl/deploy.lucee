@@ -28,7 +28,7 @@ component {
             doTrace = false,
             trace = [ ]
         };
-        if ( len( getContextRoot() ) ) {
+        if ( len( getContextRoot() ) ) {            
             request._fw1.cgiScriptName = replace( CGI.SCRIPT_NAME, getContextRoot(), '' );
             request._fw1.cgiPathInfo = replace( CGI.PATH_INFO, getContextRoot(), '' );
         }
@@ -431,6 +431,8 @@ component {
      * with getSubsystemSectionAndItem() below
      */
     public string function getFullyQualifiedAction( string action = request.action ) {
+        // writeDump(arguments);
+        // abort;
         var requested = getSubsystem( action );
         if ( len( requested ) ) {
             // request specifies non-empty subsystem, use it as-is:
@@ -917,7 +919,7 @@ component {
 
         restoreFlashContext();
         // ensure flash context cannot override request action:
-        request.context[variables.framework.action] = request.action;
+        request.context[variables.framework.action] = request.action;        
 
         if ( isUnhandledRequest( targetPath ) ) {
             structDelete(this, 'onRequest');
@@ -2743,7 +2745,7 @@ component {
                 } else {
                     request.context[ pathInfo[sesIx-1] ] = pathInfo[sesIx];
                 }
-            }
+            }            
             // certain remote calls do not have URL or form scope:
             if ( isDefined( 'URL'  ) ) structAppend( request.context, URL );
             if ( isDefined( 'form' ) ) structAppend( request.context, form );
@@ -2770,7 +2772,7 @@ component {
                         break;
                     }
                 }
-            }
+            }           
             request._fw1.headers = httpData.headers;
             // figure out the request action before restoring flash context:
             if ( !structKeyExists( request.context, variables.framework.action ) ) {
@@ -2780,7 +2782,7 @@ component {
             }
             if ( variables.framework.noLowerCase ) {
                 request.action = validateAction( request.context[ variables.framework.action ] );
-            } else {
+            } else {                
                 request.action = validateAction( lCase(request.context[ variables.framework.action ]) );
             }
             request._fw1.requestDefaultsInitialized = true;
@@ -2862,7 +2864,7 @@ component {
     }
 
     private string function validateAction( string action ) {
-        // check for forward and backward slash in the action - using chr() to avoid confusing TextMate (Hi Nathan!)
+        // check for forward and backward slash in the action - using chr() to avoid confusing TextMate (Hi Nathan!)        
         if ( findOneOf( chr(47) & chr(92), action ) > 0 ) {
             throw( type='FW1.actionContainsSlash', message="Found a slash in the action: '#action#'.",
                     detail='Actions are not allowed to embed sub-directory paths.');

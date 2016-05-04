@@ -110,6 +110,27 @@ component extends=""{
 
 	}
 
+	function createVersionSettingTest(){
+
+		transaction {
+			var image = new appTest().createImageTest();
+			var versionSetting = image.putVersionSetting("foo","bar","");
+			transaction action="commit";
+		}
+
+		expect(arrayLen(image.getVersionSettings())).toBe(1);
+		return versionSetting;
+	}
+
+	function createVersionSettingByIdTest(){
+		
+		versionSetting = createVersionSettingTest();
+		versionSettingOptional = versionSetting.getImage().getVersionSettingById(versionSetting.getId());
+		expect(versionSettingOptional).toBeInstanceOf("Optional");
+		expect(versionSettingOptional.get() === versionSetting).toBeTrue();		
+
+	}
+
 	
 	
 }

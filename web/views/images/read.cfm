@@ -40,35 +40,83 @@
 				
 					<!-- Nav tabs -->
 					<ul class="nav nav-tabs text-left" role="tablist">
-						<li role="presentation" class="active">
+						<li role="presentation" class="{{#if view_state.script_tab}}active{{/if}}">
 						<a href="#home3" aria-controls="home" role="tab" data-toggle="tab">Install Script</a>
 						</li>
-						<li role="presentation" class="">
+						<li role="presentation" class="{{#if view_state.version_tab}}active{{/if}}">
 							<a href="#versions" aria-controls="versions" role="tab" data-toggle="tab">Image Versions</a>
 						</li>
 
-						<!--- <li role="presentation">
-							<a href="#profile3" aria-controls="profile" role="tab" data-toggle="tab">Version Script</a>
-						</li>		 --->				
+						<li role="presentation" class="{{#if view_state.setting_tab}}active{{/if}}">
+							<a href="#version_settings" aria-controls="version_settings" role="tab" data-toggle="tab">Version Settings</a>
+						</li>						
 					</ul>
 
 					<!-- Tab panes -->
 					<div class="tab-content">
-						<div role="tabpanel" class="tab-pane active fade in" id="home3">
+						<div role="tabpanel" class="tab-pane fade in {{#if view_state.script_tab}}active{{/if}}" id="home3">
 							<p>This shell script will be executed on creation of the image</p>
 							<textarea name="base_script" style="width:100%; min-height:300px;">{{data.base_script}}</textarea>
 						</div>
-						<div role="tabpanel" class="tab-pane fade in" id="versions">
+						<div role="tabpanel" class="tab-pane fade in {{#if view_state.version_tab}}active{{/if}}" id="versions">
 							<p>These are the versions of your application that this image is used on.</p>
+						</div>
+						<div role="tabpanel" class="tab-pane fade in {{#if view_state.setting_tab}}active{{/if}}" id="version_settings">
+							<p>Version settings are the key/values that must be set on each new version created. 
+							They are usually values that change for every release, like the github repo address. Version Settings can
+							be used in the image install script to setup the image properly for the version.</p>
+							<div class="row">
+								<strong>
+								<div class="col-lg-3">Key</div>								
+								<div class="col-lg-3">Default</div>
+								<div class="col-lg-3">Actions</div>
+								</strong>
+							</div>
+				
+							{{#if view_state.setting_tab}}
+							<div class="row alert alert-info">
+								<form method="post" action="/index.cfm/apps/{{data.id}}/version_settings/{{#if view_state.version_setting.id}}{{view_state.version_setting.id}}{{/if}}" style="display:inline;">
+								<div class="col-lg-3"><input type="text" class="form-control" name="key" placeholder="Setting Key" {{#if view_state.version_setting.key}}value="{{view_state.version_setting.key}}"{{/if}}></div>
+								<div class="col-lg-3"><input type="text" class="form-control" name="value" placeholder="Setting Value" {{#if view_state.version_setting.value}}value="{{view_state.version_setting.value}}"{{/if}}></div>
+								<div class="col-lg-3"><input type="text" class="form-control" name="default" placeholder="Default Value" {{#if view_state.version_setting.default}}value="{{view_state.version_setting.default}}"{{/if}}></div>
+								<div class="col-lg-3">
+									<input type="hidden" name="goto" value="/index.cfm/apps/{{data.id}}/version_settings" />
+									<button type="submit" name="submit" class="btn btn-primary btn-xs" value="true">Add New</button>						
+									<a href="/index.cfm/images/{{data.image.id}}" class="btn btn-default btn-xs" value="true">Cancel</a>	
+								</div>
+								</form>
+							</div>
+							{{/if}}
+				
+							{{#each data.version_settings}}
+							<div class="row">
+								<div class="col-lg-3">{{key}}</div>
+								<div class="col-lg-3">{{value}}</div>
+								<div class="col-lg-3">{{default}}</div>
+								<div class="col-lg-3">
+									<a href="/index.cfm/apps/{{@root.data.id}}/version_settings/{{id}}" type="submit" name="submit" class="btn btn-primary btn-xs" value="true">Edit</a>
+									<button type="submit" name="submit" class="btn btn-primary btn-xs" value="true">Delete</button>
+								</div>
+							</div>
+							{{/each}}							
+							<!--- <cf_zeroform> --->
+
+							<cf_zeroform name="test_form" action="/index.cfm/images/{{data.image.id}}/read" method="post">
+								<cf_button type="submit" name="add_setting" class="btn btn-success" value="true">Add Setting</cf_button>
+							</cf_zeroform>
+
+							<!---<input type="hidden" name="zero_form" value="add_setting">
+							<input type="hidden" name="add_setting.action" value="/index.cfm/images/{{data.image.id}}/read">														
+							<input type="hidden" name="add_setting.data.goto" value="/index.cfm/images/{{data.image.id}}">
+							<button type="submit" name="add_setting.data.submit" class="btn btn-success" value="true">Add Setting</button>--->
+							<!--- </cf_zeroform> --->
 						</div>
 						<!--- <div role="tabpanel" class="tab-pane fade" id="profile3">
 							<p>The version script is applied on top of a clone of an image created with the base script.</p>
 						</div>
 						 --->
 					</div>
-
-				</div>
-				
+				</div>				
 			</div>
 		</div>		
 		</form>
@@ -123,7 +171,7 @@
 					</tbody>
 				</table>
 			</div>
-		</div>
+		</div>		
 	</article>
 	<!-- END Main content -->
 </div>

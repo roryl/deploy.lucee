@@ -1,17 +1,37 @@
 component extends="one" {	
 
+	copyCGI = duplicate(CGI);	
+	
+	/*
+	Global framework rewrite of the request scope. Allows mimicing HTML 5 
+	nested form feature, which is not currently supported by Internet Explorer
+	 */
+	if(structKeyExists(form,"zero_form")){
+
+		formgroup = duplicate(form[form.zero_form]);
+		// writeDump(formgroup);
+		if(structKeyExists(formgroup,"submit")){
+			actionPathInfo = replaceNoCase(formgroup.action, copyCGI.SCRIPT_NAME, "");
+			copyCGI.path_info = actionPathInfo;	
+			copyCGI.request_method = formgroup.method;						
+			structClear(form);
+			structAppend(form,formgroup.data);			
+		}
+	}
+
+	// writeDump(form);
      request._fw1 = {
-        cgiScriptName = replaceNoCase(CGI.SCRIPT_NAME,".json",""),
-        cgiPathInfo = replaceNoCase(CGI.PATH_INFO,".json",""),
-        cgiRequestMethod = CGI.REQUEST_METHOD,
+        cgiScriptName = replaceNoCase(copyCGI.SCRIPT_NAME,".json",""),
+        cgiPathInfo = replaceNoCase(copyCGI.PATH_INFO,".json",""),
+        cgiRequestMethod = copyCGI.REQUEST_METHOD,
         controllers = [ ],
         requestDefaultsInitialized = false,
         routeMethodsMatched = { },
         doTrace = false,
         trace = [ ]
     };
-
-    request._zero.PathInfo = cgi.path_Info;    
+	
+    request._zero.PathInfo = copyCGI.path_Info;    
 	request._zero.ContentType = listLast(request._zero.PathInfo,".");
 
 	switch(lcase(request._zero.ContentType)){
@@ -26,7 +46,6 @@ component extends="one" {
 
 	variables.zero.throwOnNullControllerResult = true;
 	variables.zero.argumentCheckedControllers = true;
-
 
 	/*
 		This is provided for illustration only - YOU SHOULD NOT USE THIS IN
@@ -101,7 +120,8 @@ component extends="one" {
 	  { method = 'list', httpMethods = [ '$GET' ] },
 	  { method = 'new', httpMethods = [ '$GET', '$POST' ], routeSuffix = '/new' },
 	  { method = 'create', httpMethods = [ '$POST' ] },
-	  { method = 'read', httpMethods = [ '$GET' ], includeId = true },
+	  { method = 'read', httpMethods = [ '$GET' ], includeId = true },	  
+	  { method = 'read', httpMethods = [ '$POST' ], includeId = true, routeSuffix = '/read' },	  
 	  { method = 'update', httpMethods = [ '$PUT','$PATCH', '$POST' ], includeId = true },
 	  { method = 'delete', httpMethods = [ '$DELETE' ], includeId = true },
 	  { method = 'delete', httpMethods = [ '$POST' ], includeId = true, routeSuffix = '/delete' }

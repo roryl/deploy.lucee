@@ -15,8 +15,13 @@ component accessors="true" {
       
 	}
 
+    public function new( ){
+
+    }
+
 	public struct function read( required numeric id,
-								 deployed_response={}
+								 deployed_response={},
+                                 add_setting=false
 								 ) {   	        
 
     	var Deploy = variables.fw.getDeploy();
@@ -43,8 +48,13 @@ component accessors="true" {
 	    			"image_options":Images.getImageOptions(),
 	    			"base_script":Image.getBaseScript(),
                     "deployed_response":deployed_response,                    
-	    		}
-	    	}
+	    		},
+                "view_state":{
+                    "setting_tab":add_setting,
+                    "script_tab":!add_setting,
+                    "versions_tab":false,
+                }
+	    	}            
 	    	return out;    		
     	}
 	}

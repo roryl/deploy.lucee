@@ -27,11 +27,10 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/2.2.2/isotope.pkgd.js"></script>
 	<script src="/assets/admin/js/jquery.smoothState.min.js"></script>
 <!--- 	<link href="/assets/admin/vendors/bootstrap-switch/css/bootstrap3/bootstrap-switch.min.css" rel="stylesheet">	
-	<script src="/assets/admin/vendors/bootstrap-switch/js/bootstrap-switch.min.js"></script> --->
+	<script src="/assets/admin/vendors/bootstrap-switch/js/bootstrap-switch.min.js"></script> --->	
   </head>
 
-  <body>
-
+  <body>	
 	<header class="site-header">
 
 	  <!-- Top navbar & branding -->
@@ -98,7 +97,7 @@
 	<!-- END Footer -->
 
 	<!-- Scripts -->
-	<script type="text/javascript">
+	<script type="text/javascript">		
 
 		// Keeps scroll position on postbacks
 		// http://codepen.io/patrickkahl/pen/KFmAb
@@ -133,7 +132,7 @@
 		        // $('select').scrollPosReaload();
 		        $('form').scrollPosReaload();
 
-		        // $('##main').smoothState();
+		        // $('##main').smoothState();   
 
 		    });
 		  

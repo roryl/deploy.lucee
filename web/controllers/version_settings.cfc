@@ -6,27 +6,27 @@ component accessors="true" {
 		return this;
 	}
 	
-	public struct function list( apps_id ) {
+	public struct function list( images_id ) {
     	
     	var Deploy = variables.fw.getDeploy();
-    	var App = Deploy.getAppById(apps_id).elseThrow("Could not load the app id #apps_id#");
+    	var Image = Deploy.getImageById(images_id).elseThrow("Could not load the app id #images_id#");
 
     	var out = {
     		"success":true,
-    		"data": new serializer().serializeEntity(App, {versionSettings:{}})
+    		"data": new serializer().serializeEntity(Image, {versionSettings:{}})
     	}
     	// writeDump(app);
     	// abort;
     	return out;
 	}
 
-	public struct function create( required numeric apps_id,
+	public struct function create( required numeric images_id,
 								 required string key,
 								 required string value,
 								 required string default) {
 
       	var Deploy = variables.fw.getDeploy();
-    	var App = Deploy.getAppById(apps_id).elseThrow("Could not load the app id #apps_id#");
+    	var Image = Deploy.getImageById(images_id).elseThrow("Could not load the app id #images_id#");
 
     	transaction {
     		var versionSetting = App.putVersionSetting(key, value, default);    	
@@ -40,16 +40,16 @@ component accessors="true" {
     	return out;
 	}	
 
-	public struct function read( required numeric apps_id,
+	public struct function read( required numeric images_id,
 								required numeric id ) {
       
 		var Deploy = variables.fw.getDeploy();
-    	var App = Deploy.getAppById(apps_id).elseThrow("Could not load the app id #apps_id#");
+    	var Image = Deploy.getImageById(images_id).elseThrow("Could not load the app id #images_id#");
     	var versionSetting = App.getVersionSettingById(id).elseThrow();
 
     	var out = {
     		"success":true,
-    		"data": new serializer().serializeEntity(App, {version_settings:{}}),
+    		"data": new serializer().serializeEntity(Image, {version_settings:{}}),
     		"view_state":{
     			"new":true,    			
     			"version_setting":new serializer().serializeEntity(versionSetting)
@@ -59,11 +59,11 @@ component accessors="true" {
     	return out;
 	}
 
-	public struct function update( 	required numeric apps_id,
+	public struct function update( 	required numeric images_id,
 									required numeric id) {
 
     	var Deploy = variables.fw.getDeploy();
-    	var App = Deploy.getAppById(apps_id).elseThrow("Could not load the app id #apps_id#");
+    	var Image = Deploy.getImageById(images_id).elseThrow("Could not load the app id #images_id#");
     	
     	transaction {
     		var versionSetting = App.putVersionSetting(key, value, default);    	
@@ -83,14 +83,14 @@ component accessors="true" {
       
 	}
 
-	public struct function new( apps_id ){
+	public struct function new( images_id ){
 
 		var Deploy = variables.fw.getDeploy();
-    	var App = Deploy.getAppById(apps_id).elseThrow("Could not load the app id #apps_id#");
+    	var Image = Deploy.getImageById(images_id).elseThrow("Could not load the app id #images_id#");
 
     	var out = {
     		"success":true,
-    		"data": new serializer().serializeEntity(App, {versionSettings:{}}),
+    		"data": new serializer().serializeEntity(Image, {versionSettings:{}}),
     		"view_state":{
     			"new":true
     		}

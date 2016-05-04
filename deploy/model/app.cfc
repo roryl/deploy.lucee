@@ -7,8 +7,7 @@ component persistent="true" table="app" discriminatorColumn="app_type" {
 	property name="deploy" fieldtype="many-to-one" cfc="deploy" fkcolumn="deploy_id" inverse="true";	
 	property name="instances" fieldtype="one-to-many" cfc="instance" fkcolumn="app_instance_id" singularname="instance";
 	property name="balancer" fieldtype="one-to-one" cfc="balancer" fkcolumn="app_balancer_id";	
-	property name="versions" fieldtype="one-to-many" cfc="version" fkcolumn="app_version_id" singularname="version";
-	property name="versionSettings" fieldtype="one-to-many" cfc="versionSetting" fkcolumn="app_id" singularname="versionSetting";	
+	property name="versions" fieldtype="one-to-many" cfc="version" fkcolumn="app_version_id" singularname="version";	
 	property name="currentVersion" fieldtype="one-to-one" cfc="version" fkcolumn="current_version_id";
 	property name="migrations" fieldtype="one-to-many" cfc="migration" fkcolumn="app_id" singularname="migration";
 	property name="images" fieldtype="one-to-many" cfc="image" fkcolumn="app_id" singularname="image";
@@ -66,30 +65,7 @@ component persistent="true" table="app" discriminatorColumn="app_type" {
 		if(appIsAtZero()){
 			return "unprovisioned";
 		}
-	}
-
-	public versionSetting function putVersionSetting(required string key, required string value, required string default){
-
-		var key = arguments.key;
-		var value = arguments.value;
-		var default = arguments.default;
-
-		var VersionSetting = entityLoad("versionSetting", {app:this, key:key}, true);
-		if(isNull(VersionSetting)){
-			var VersionSetting = entityNew("versionSetting");
-			entitySave(VersionSetting);
-			this.addVersionSetting(VersionSetting);
-			VersionSetting.setApp(this);
-		}
-		versionSetting.setKey(key);
-		versionSetting.setValue(value);
-		versionSetting.setDefault(default);
-		return versionSetting;
-	}
-
-	public Optional function getVersionSettingById(required numeric id){
-		return new Optional(entityLoad("versionSetting", {app:this, id:id}, true));
-	}
+	}	
 
 	public Throwable function createInstance(version=this.getCurrentVersion(), image=this.getDefaultImage()){
 
