@@ -73,22 +73,26 @@
 								</strong>
 							</div>
 				
-							{{#if view_state.setting_tab}}
+							{{#if view_state.add_setting}}
 							<div class="row alert alert-info">
-								<form method="post" action="/index.cfm/apps/{{data.id}}/version_settings/{{#if view_state.version_setting.id}}{{view_state.version_setting.id}}{{/if}}" style="display:inline;">
-								<div class="col-lg-3"><input type="text" class="form-control" name="key" placeholder="Setting Key" {{#if view_state.version_setting.key}}value="{{view_state.version_setting.key}}"{{/if}}></div>
-								<div class="col-lg-3"><input type="text" class="form-control" name="value" placeholder="Setting Value" {{#if view_state.version_setting.value}}value="{{view_state.version_setting.value}}"{{/if}}></div>
-								<div class="col-lg-3"><input type="text" class="form-control" name="default" placeholder="Default Value" {{#if view_state.version_setting.default}}value="{{view_state.version_setting.default}}"{{/if}}></div>
-								<div class="col-lg-3">
-									<input type="hidden" name="goto" value="/index.cfm/apps/{{data.id}}/version_settings" />
-									<button type="submit" name="submit" class="btn btn-primary btn-xs" value="true">Add New</button>						
-									<a href="/index.cfm/images/{{data.image.id}}" class="btn btn-default btn-xs" value="true">Cancel</a>	
-								</div>
-								</form>
+								<cf_zeroform name="save_setting" method="post" action="/index.cfm/images/{{data.image.id}}/version_settings/{{##if view_state.version_setting.id}}{{view_state.version_setting.id}}{{/if}}" style="display:inline;">				
+									<div class="col-lg-3"><cf_input type="text" class="form-control" name="key" placeholder="Setting Key" value="{{##if view_state.version_setting.key}}{{view_state.version_setting.key}}{{/if}}" /></div>
+									<div class="col-lg-3"><cf_input type="text" class="form-control" name="value" placeholder="Setting Value" value="{{##if view_state.version_setting.value}}{{view_state.version_setting.value}}{{/if}}" /></div>
+									<div class="col-lg-3"><cf_input type="text" class="form-control" name="default" placeholder="Default Value" value="{{##if view_state.version_setting.default}}{{view_state.version_setting.default}}{{/if}}" /></div>
+									<div class="col-lg-3">
+										<cf_input type="hidden" name="goto" value="/index.cfm/images/{{data.image.id}}/" />
+										<cf_input type="hidden" name="preserve_response" vale="version_setting" />
+										<cf_button type="submit" name="submit" class="btn btn-primary btn-xs" value="true">Add New</cf_button>
+										
+										<cf_zeroform action="/index.cfm/images/{{data.image.id}}/read" method="post" name="cancel_setting">
+											<cf_button name="cancel_setting" class="btn btn-default btn-xs" value="true">Cancel</cf_button>
+										</cf_zeroform>
+									</div>								
+								</cf_zeroform>
 							</div>
 							{{/if}}
 				
-							{{#each data.version_settings}}
+							{{#each data.image.version_settings}}
 							<div class="row">
 								<div class="col-lg-3">{{key}}</div>
 								<div class="col-lg-3">{{value}}</div>
@@ -98,8 +102,8 @@
 									<button type="submit" name="submit" class="btn btn-primary btn-xs" value="true">Delete</button>
 								</div>
 							</div>
-							{{/each}}							
-							<!--- <cf_zeroform> --->
+							{{/each}}
+														
 
 							<cf_zeroform name="test_form" action="/index.cfm/images/{{data.image.id}}/read" method="post">
 								<cf_button type="submit" name="add_setting" class="btn btn-success" value="true">Add Setting</cf_button>

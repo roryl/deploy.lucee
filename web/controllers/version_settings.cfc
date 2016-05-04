@@ -29,7 +29,7 @@ component accessors="true" {
     	var Image = Deploy.getImageById(images_id).elseThrow("Could not load the app id #images_id#");
 
     	transaction {
-    		var versionSetting = App.putVersionSetting(key, value, default);    	
+    		var versionSetting = Image.putVersionSetting(key, value, default);    	
     		transaction action="commit";
     	}
 

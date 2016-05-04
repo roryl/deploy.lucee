@@ -5,21 +5,23 @@ component extends="one" {
 	/*
 	Global framework rewrite of the request scope. Allows mimicing HTML 5 
 	nested form feature, which is not currently supported by Internet Explorer
-	 */
+	 */	
 	if(structKeyExists(form,"zero_form")){
-
-		formgroup = duplicate(form[form.zero_form]);
-		// writeDump(formgroup);
-		if(structKeyExists(formgroup,"submit")){
-			actionPathInfo = replaceNoCase(formgroup.action, copyCGI.SCRIPT_NAME, "");
-			copyCGI.path_info = actionPathInfo;	
-			copyCGI.request_method = formgroup.method;						
-			structClear(form);
-			structAppend(form,formgroup.data);			
+		zeroForms = listToArray(form.zero_form);
+		for(zeroFormName in zeroForms){			
+			if(structKeyExists(form,zeroFormName)){
+				formgroup = duplicate(form[zeroFormName]);			
+				if(structKeyExists(formgroup,"submit")){
+					actionPathInfo = replaceNoCase(formgroup.action, copyCGI.SCRIPT_NAME, "");
+					copyCGI.path_info = actionPathInfo;	
+					copyCGI.request_method = formgroup.method;						
+					structClear(form);
+					structAppend(form,formgroup.data);			
+				}							
+			}
 		}
 	}
-
-	// writeDump(form);
+	
      request._fw1 = {
         cgiScriptName = replaceNoCase(copyCGI.SCRIPT_NAME,".json",""),
         cgiPathInfo = replaceNoCase(copyCGI.PATH_INFO,".json",""),
@@ -227,11 +229,7 @@ component extends="one" {
 
 			break;			
 		}				
-	}
-
-	private function extractVariables(required string){
-
-	}
+	}	
 
 	function onRequest(){
 

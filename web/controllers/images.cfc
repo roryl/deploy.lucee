@@ -21,9 +21,10 @@ component accessors="true" {
 
 	public struct function read( required numeric id,
 								 deployed_response={},
-                                 add_setting=false
+                                 add_setting=false,
+                                 cancel_setting=false
 								 ) {   	        
-
+        // writeDump(arguments);
     	var Deploy = variables.fw.getDeploy();
     	var Image = Deploy.getImageById(id);
     	
@@ -44,14 +45,15 @@ component accessors="true" {
 	    	var out = {
 	    		"success":true,
 	    		"data":{
-	    			"image":new serializer().serializeEntity(Image, {app:{},instanceTests:{}}),
+	    			"image":new serializer().serializeEntity(Image, {app:{},instanceTests:{}, versionSettings:{}}),
 	    			"image_options":Images.getImageOptions(),
 	    			"base_script":Image.getBaseScript(),
                     "deployed_response":deployed_response,                    
 	    		},
                 "view_state":{
-                    "setting_tab":add_setting,
-                    "script_tab":!add_setting,
+                    "add_setting":add_setting,
+                    "setting_tab":(add_setting OR cancel_setting),
+                    "script_tab":!(add_setting OR cancel_setting),
                     "versions_tab":false,
                 }
 	    	}            
