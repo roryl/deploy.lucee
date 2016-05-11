@@ -48,7 +48,20 @@ component{
 
 	// request start
 	public boolean function onRequestStart( String targetPage ){
-		setting requesttimeout="100";		
+		setting requesttimeout="100";
+		if(structKeyExists(url,"h2")){			
+			query name="drop"{
+				echo("DROP ALL OBJECTS;");
+			}			
+		} else {
+			query name="drop"{ 
+				echo("use deploy; ");
+				echo("drop database deploy; ");
+				echo("create database deploy; ");
+				echo("use deploy; ");
+			}		
+		}	
+		ORMReload();		
 		return true;
 	}
 }

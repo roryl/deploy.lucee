@@ -8,19 +8,19 @@ component extends="testbox.system.baseSpec"{
 
 	// executes before all test cases
 	function beforeTests(){
-		if(structKeyExists(url,"h2")){			
-			query name="drop"{
-				echo("DROP ALL OBJECTS;");
-			}			
-		} else {
-			query name="drop"{ 
-				echo("use deploy; ");
-				echo("drop database deploy; ");
-				echo("create database deploy; ");
-				echo("use deploy; ");
-			}		
-		}	
-		ORMReload();				
+		// if(structKeyExists(url,"h2")){			
+		// 	query name="drop"{
+		// 		echo("DROP ALL OBJECTS;");
+		// 	}			
+		// } else {
+		// 	query name="drop"{ 
+		// 		echo("use deploy; ");
+		// 		echo("drop database deploy; ");
+		// 		echo("create database deploy; ");
+		// 		echo("use deploy; ");
+		// 	}		
+		// }	
+		// ORMReload();				
 	}
 
 	// executes after all test cases
@@ -149,6 +149,7 @@ component extends="testbox.system.baseSpec"{
 			var balancer = app.createBalancer({});
 			expect(instance).toBeInstanceOf("instance");
 			expect(balancer.hasInstance(instance)).toBeFalse();	
+			expect(app.getCurrentVersion().getInstances()[1] === instance).toBeTrue();
 			transaction action="rollback";			
 		}
 		return Instance;
@@ -183,9 +184,74 @@ component extends="testbox.system.baseSpec"{
 			expect(app.getDefaultImage() === images[1]).toBeTrue();	
 			expect(app.getDefaultImage() === images[2]).toBeFalse();
 			transaction action="rollback";
+		}		
+	}
+
+	function createVersionTest(){
+		transaction {
+			var Deploy = new ormTest().createDeployWithApp();
+			var App = Deploy.getApps()[1];
+			var semver = new semver("1.0.0");
+			var newVersion = App.createVersion(semver, {});
+			expect(arrayLen(App.getVersions())).toBe(2);						
+			expect(newVersion.threw()).toBeFalse();
+			transaction action="commit";			
+		}
+	}
+
+	function createVersionThrowForSameVersionTest(){
+		transaction {
+			var Deploy = new ormTest().createDeployWithApp();
+			var App = Deploy.getApps()[1];
+			var semver = new semver("0.0.0");
+			var newVersion = App.createVersion(semver, {});
+			expect(arrayLen(App.getVersions())).toBe(1);						
+			expect(newVersion.threw()).toBeTrue();
+			expect(newVersion.getMessage()).toBe("Could not add the version because it was identical with the latest version which was 0.0.0");
+			transaction action="commit";			
+		}
+	}
+
+	function createVersionThrowForLaterVersionTest(){
+		transaction {
+			var Deploy = new ormTest().createDeployWithApp();
+			var App = Deploy.getApps()[1];
+			var semver = new semver("2.0.0");
+			var newVersion = App.createVersion(semver, {});
+			expect(arrayLen(App.getVersions())).toBe(2);
+			ORMFlush();					
+
+			var newestSemver = new semver("1.0.0");
+			var newestVersion = App.createVersion(newestSemver, {});
+			expect(newestVersion.threw()).toBeTrue();
+			expect(newestVersion.getMessage()).toBe("Could not add the version because the latest version is after this one, the latest version was 2.0.0");
+			transaction action="commit";
+		}
+	}
+
+	function getInactiveInstancesTest(){
+
+		transaction {
+
+			var Deploy = new ormTest().createDeployWithAppAndImageAndBalancer();
+			var App = Deploy.getApps()[1];
+			var Balancer = App.getBalancer();
+			var Instance = App.createInstance().orRethrow();
+			var Instance2 = App.createInstance().orRethrow();
+			var Instance3 = App.createInstance().orRethrow();
+
+			Balancer.addInstance(Instance);
+			Instance.setBalancer(Balancer);
+
+			var inactiveInstances = App.getInactiveInstances();
+			expect(arrayLen(inactiveInstances)).toBe(2);
+			expect(arrayLen(app.getInstances())).toBe(3);
+
+			transaction action="rollback";
+
 		}
 
-		
+
 	}
 	
 	

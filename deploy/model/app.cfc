@@ -6,6 +6,7 @@ component persistent="true" table="app" discriminatorColumn="app_type" {
 	property name="status" persistent="false";
 	property name="deploy" fieldtype="many-to-one" cfc="deploy" fkcolumn="deploy_id" inverse="true";	
 	property name="instances" fieldtype="one-to-many" cfc="instance" fkcolumn="app_instance_id" singularname="instance";
+	property name="inactiveInstances" persistent="false" setter="false";
 	property name="balancer" fieldtype="one-to-one" cfc="balancer" fkcolumn="app_balancer_id";	
 	property name="versions" fieldtype="one-to-many" cfc="version" fkcolumn="app_version_id" singularname="version";	
 	property name="currentVersion" fieldtype="one-to-one" cfc="version" fkcolumn="current_version_id";
@@ -65,7 +66,34 @@ component persistent="true" table="app" discriminatorColumn="app_type" {
 		if(appIsAtZero()){
 			return "unprovisioned";
 		}
-	}	
+	}
+
+	public array function getInactiveInstances(){
+
+		var BalancedInstances = this.getBalancer().getInstances();
+		var AllInstances = this.getInstances();
+
+		var out = [];
+		if(isNull(AllInstances)){
+			return out;
+		}
+		
+		for(var instance in allInstances){
+			if(this.getBalancer().hasInstance(instance)){
+				continue;
+			} else {
+				out.append(instance);
+			}
+		}
+
+		// var AllInstances.removeAll(BalancedInstances);
+		return out;
+	}
+
+	public function getLatestVersion(){
+		var version = ORMExecuteQuery("select v from version v join v.app a where a.id = #this.getId()# order by v.id desc limit 1", true);
+		return version;
+	}
 
 	public Throwable function createInstance(version=this.getCurrentVersion(), image=this.getDefaultImage()){
 
@@ -84,6 +112,8 @@ component persistent="true" table="app" discriminatorColumn="app_type" {
 			this.addInstance(instance);
 			instance.setApp(this);
 			entitySave(instance);
+			instance.setVersion(version);
+			version.addInstance(instance);
 
 			var data = providerMessage.getData();
 			instance.setInstanceId(data.instanceId);		
@@ -128,6 +158,31 @@ component persistent="true" table="app" discriminatorColumn="app_type" {
 		}
 
 		return image;
+	}
+
+	public Throwable function createVersion(required semver semver, required struct versionSettings){
+
+		var LatestSemver = this.getLatestVersion().getSemver();
+
+		if(LatestSemver.equals(semver)){
+			return new throwable("Could not add the version because it was identical with the latest version which was #LatestSemver.toString()#");
+		}
+
+		if(LatestSemver.isAfter(semver)){
+			return new throwable("Could not add the version because the latest version is after this one, the latest version was #LatestSemver.toString()#");
+		}
+
+		var Version = entityNew("version", {semver:semver});
+		entitySave(Version);
+		this.addVersion(Version);
+		Version.setApp(this);		
+		for(setting in versionSettings){
+			var VersionSetting = entityNew("versionSetting", {key:setting, value:versionSettings[setting]});
+			entitySave(VersionSetting);
+			Version.addVersionSetting(VersionSetting);
+			VersionSetting.setVersion(Version);
+		}
+		return new throwable(value=Version);
 	}
 
 	public function appIsAtZero(){

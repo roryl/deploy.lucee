@@ -8,6 +8,39 @@ component accessors="true" {
 		return this;
 	}
 
+	private function serializeApp(required app){
+
+		var app = arguments.app;
+		// writeDump(app.getBalancer());
+		// abort;
+		var out = new serializer().serializeEntity(app, {
+			currentVersion:{
+				semver:{
+
+				}
+			},
+			versions:{semver:{}},
+			defaultImage:{
+				imageSettings:{}
+			},
+			balancer:{
+				balancerInstances:{},
+				instances:{
+					version:{
+						semver:{}
+					}
+				}
+			},
+			instances:{},			
+		});
+		out.inactive_instances = new serializer().serializeEntity(app.getInactiveInstances(), {
+			version:{
+				semver:{}
+			}
+		})
+		return out;
+	}
+
 	public function new(name="",
 						domain_name="",
 						provider="",
@@ -153,30 +186,7 @@ component accessors="true" {
 		// writeDump(out);
 
 		return out;
-	}
-
-	private function serializeApp(required app){
-
-		var app = arguments.app;
-		// writeDump(app.getBalancer());
-		// abort;
-		var out = new serializer().serializeEntity(app, {
-			currentVersion:{
-				semver:{
-
-				}
-			},
-			versions:{semver:{}},
-			defaultImage:{
-				imageSettings:{}
-			},
-			balancer:{
-				instances:{}
-			},
-			instances:{}
-		});
-		return out;
-	}
+	}	
 	
 	public struct function list() {
     	var Deploy = variables.fw.getDeploy();

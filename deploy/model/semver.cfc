@@ -132,6 +132,33 @@ component {
 		}
 	}
 
+	public function incrementMajor(count=1){
+
+		var major = duplicate(this.getMajor()) + count;
+		var minor = duplicate(this.getMinor());
+		var patch = duplicate(this.getPatch());
+		value = "#major#.#minor#.#patch#";
+		return createObject("semver").init(value);
+	}
+
+	public function incrementMinor(count=1){
+
+		var major = duplicate(this.getMajor());
+		var minor = duplicate(this.getMinor()) + count;
+		var patch = duplicate(this.getPatch());
+		value = "#major#.#minor#.#patch#";
+		return createObject("semver").init(value);
+	}
+
+	public function incrementPatch(count=1){
+
+		var major = duplicate(this.getMajor());
+		var minor = duplicate(this.getMinor());
+		var patch = duplicate(this.getPatch()) + count;
+		value = "#major#.#minor#.#patch#";
+		return createObject("semver").init(value);
+	}
+
 	public function isZero(){
 		return this.toString() == "0.0.0";
 	}

@@ -4,25 +4,29 @@ component accessors="true" {
 		variables.fw = fw;
 		return this;
 	}
+
+	public struct function new( rc ) {
+    	return {};
+	}
 	
-	public void function list( rc ) {
-      
+	public struct function list( rc ) {
+    	return {}; 
 	}
 
-	public void function create( rc ) {
-      
+	public struct function create( rc ) {
+    	return {};
 	}
 
-	public void function read( rc ) {
-      
+	public struct function read( rc ) {
+    	return {};
 	}
 
-	public void function update( rc ) {
-      
+	public struct function update( rc ) {
+    	return {};
 	}
 
-	public void function delete( rc ) {
-      
+	public struct function delete( rc ) {
+    	return {};
 	}
 	
 }

@@ -14,6 +14,7 @@ component{
 	currentPath = getDirectoryFromPath(getCurrentTemplatePath());
 	this.mappings[ "/deploy" ] = expandPath(currentPath & "../deploy");
 	this.mappings[ "/web" ] = expandPath(currentPath & "../web");
+	this.mappings[ "/test-harness" ] = expandPath(currentPath & "../test-harness");
 	
 
 	// this.mappings["/deploy"] = getDirectoryFromPath( get)

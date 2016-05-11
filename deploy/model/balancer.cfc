@@ -3,7 +3,7 @@ component persistent="true" table="balancer" {
 	property name="status" default="stopped";
 	property name="deployed" type="boolean" default="false";
 	property name="app" fieldtype="one-to-one" cfc="app" mappedby="balancer";
-	property name="instances" fieldtype="one-to-many" cfc="balancerInstance" fkcolumn="balancer_id" singularname="instance";
+	property name="instances" fieldtype="one-to-many" cfc="instance" fkcolumn="balancer_id" singularname="instance";
 	property name="balancerInstances" fieldtype="one-to-many" cfc="balancerInstance" fkcolumn="balancer_instance_id" singularname="balancerInstance";
 	property name="balancerSettings" fieldtype="one-to-many" cfc="balancerSetting" fkcolumn="balancer_id" singularname="balancerSetting";
 

@@ -119,6 +119,7 @@ component extends="one" {
 		defaultItem = "list"
 	}
 
+
 	variables.framework.resourceRouteTemplates = [
 	  { method = 'list', httpMethods = [ '$GET' ] },
 	  { method = 'new', httpMethods = [ '$GET', '$POST' ], routeSuffix = '/new' },

@@ -104,5 +104,26 @@ component extends=""{
 		var semver = new deploy.model.semver("0.0.1");
 		expect(semver.isZero()).toBeFalse();
 	}
+
+	function incrementMajorTest(){
+		var semver = new deploy.model.semver("0.0.0");
+		newSemver = semver.incrementMajor();
+		expect(newSemver.toString()).toBe("1.0.0");
+		expect(semver.diff(newSemver).isMajor()).toBeTrue();
+	}
+
+	function incrementMinorTest(){
+		var semver = new deploy.model.semver("0.0.0");
+		newSemver = semver.incrementMinor();
+		expect(newSemver.toString()).toBe("0.1.0");
+		expect(semver.diff(newSemver).isMinor()).toBeTrue();
+	}
+
+	function incrementPatchTest(){
+		var semver = new deploy.model.semver("0.0.0");
+		newSemver = semver.incrementPatch();
+		expect(newSemver.toString()).toBe("0.0.1");
+		expect(semver.diff(newSemver).isPatch()).toBeTrue();
+	}
 	
 }

@@ -8,20 +8,20 @@ component extends=""{
 
 	// executes before all test cases
 	function beforeTests(){
-		if(structKeyExists(url,"h2")){			
-			query name="drop"{
-				echo("DROP ALL OBJECTS;");
-			}			
-		} else {
-			query name="drop"{ 
-				echo("use deploy; ");
-				echo("drop database deploy; ");
-				echo("create database deploy; ");
-				echo("use deploy; ");
-			}		
-		}
+		// if(structKeyExists(url,"h2")){			
+		// 	query name="drop"{
+		// 		echo("DROP ALL OBJECTS;");
+		// 	}			
+		// } else {
+		// 	query name="drop"{ 
+		// 		echo("use deploy; ");
+		// 		echo("drop database deploy; ");
+		// 		echo("create database deploy; ");
+		// 		echo("use deploy; ");
+		// 	}		
+		// }
 
-		ORMReload();				
+		// ORMReload();				
 	}
 
 	// executes after all test cases
@@ -126,6 +126,37 @@ component extends=""{
 		var entity = entityNew("versionSetting");
 		entitySave(entity);		
 		return entity;
+	}
+
+	/****** TEST FIXURES **************************************/
+
+	function createDeployWithApp(){
+		var deploy = createDeploy();
+		entitySave(deploy);
+		var app = deploy.createApp("testName", "domain.com", "sample");
+		// deploy.addApp(app);
+		// app.setDeploy(deploy);
+		ORMFlush();
+		// test = deploy.getAppById(app.getId());
+		// writeDump(test.exists());
+		// abort;
+		return deploy;
+	}
+
+	function createDeployWithAppWithImage(){
+		var deploy = createDeployWithApp();
+		var app = deploy.getApps()[1];
+		app.createImage("my image", {});
+		ORMFlush();
+		return deploy;
+	}
+
+	function createDeployWithAppAndImageAndBalancer(){
+		var deploy = createDeployWithAppWithImage();
+		var app = deploy.getApps()[1];
+		var balancer = app.createBalancer({});
+		ORMFlush();
+		return deploy;
 	}
 
 
