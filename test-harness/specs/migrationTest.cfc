@@ -43,9 +43,8 @@ component extends=""{
 				balancer.addInstance(instanceThrowable.get());
 				balancer.start();							
 			}
-
+			transaction action="commit";
 		}
-
 	}
 
 	// executes after every test case
@@ -89,7 +88,7 @@ component extends=""{
 				expect(migration.getVersionChange().isMajor()).toBeTrue();
 				migration.run();									
 			}
-			transaction action="commit";			
+			transaction action="rollback";			
 
 			for(step in migration.getMigrationSteps()){
 				expect(step.getStatus()).toBe("success");
@@ -124,7 +123,7 @@ component extends=""{
 				expect(migration.getVersionChange().isMajor()).toBeTrue();
 				migration.run();									
 			}
-			transaction action="commit";			
+			transaction action="rollback";			
 
 			for(step in migration.getMigrationSteps()){
 				expect(step.getStatus()).toBe("success");
@@ -158,7 +157,7 @@ component extends=""{
 				expect(migration.getVersionChange().isMinor()).toBeTrue();
 				migration.run();									
 			}
-			transaction action="commit";			
+			transaction action="rollback";			
 
 			for(step in migration.getMigrationSteps()){
 				expect(step.getStatus()).toBe("success");
@@ -191,7 +190,7 @@ component extends=""{
 				expect(migration.getVersionChange().isPatch()).toBeTrue();
 				migration.run();									
 			}
-			transaction action="commit";			
+			transaction action="rollback";			
 
 			for(step in migration.getMigrationSteps()){
 				expect(step.getStatus()).toBe("success");

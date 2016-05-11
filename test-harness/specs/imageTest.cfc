@@ -8,15 +8,6 @@ component extends=""{
 
 	// executes before all test cases
 	function beforeTests(){
-				
-	}
-
-	// executes after all test cases
-	function afterTests(){
-	}
-
-	// executes before every test case
-	function setup( currentMethod ){
 		if(structKeyExists(url,"h2")){			
 			query name="drop"{
 				echo("DROP ALL OBJECTS;");
@@ -29,7 +20,15 @@ component extends=""{
 				echo("use deploy; ");
 			}		
 		}	
-		ORMReload();
+		ORMReload();				
+	}
+
+	// executes after all test cases
+	function afterTests(){
+	}
+
+	// executes before every test case
+	function setup( currentMethod ){
 	}
 
 	// executes after every test case
@@ -114,7 +113,7 @@ component extends=""{
 
 		transaction {
 			var image = new appTest().createImageTest();
-			var versionSetting = image.putVersionSetting("foo","bar","");
+			var versionSetting = image.putVersionSetting("foo","bar");
 			transaction action="commit";
 		}
 
@@ -122,14 +121,21 @@ component extends=""{
 		return versionSetting;
 	}
 
-	function createVersionSettingByIdTest(){
+	// function createVersionSettingByIdTest(){
 		
-		versionSetting = createVersionSettingTest();
-		versionSettingOptional = versionSetting.getImage().getVersionSettingById(versionSetting.getId());
-		expect(versionSettingOptional).toBeInstanceOf("Optional");
-		expect(versionSettingOptional.get() === versionSetting).toBeTrue();		
+	// 	transaction {
+	// 		var app = new appTest().createApp();
+	// 		var image = app.createImage("My Name", {"os":"centos", "size":"512gb", "region":"nyc1"});
+	// 		var versionSetting = image.putVersionSetting("foo","bar");
+	// 		versionSetting = createVersionSettingTest();			
+	// 		versionSettingOptional = versionSetting.getImage().getVersionSettingById(versionSetting.getId());
+	// 		expect(versionSettingOptional).toBeInstanceOf("Optional");
+	// 		expect(versionSettingOptional.get() === versionSetting).toBeTrue();		
+	// 		transaction action="commit";
+	// 	}
+		
 
-	}
+	// }
 
 	
 	

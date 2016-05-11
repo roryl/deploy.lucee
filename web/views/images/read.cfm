@@ -77,11 +77,10 @@
 							<div class="row alert alert-info">
 								<cf_zeroform name="save_setting" method="post" action="/index.cfm/images/{{data.image.id}}/version_settings/{{##if view_state.version_setting.id}}{{view_state.version_setting.id}}{{/if}}" style="display:inline;">				
 									<div class="col-lg-3"><cf_input type="text" class="form-control" name="key" placeholder="Setting Key" value="{{##if view_state.version_setting.key}}{{view_state.version_setting.key}}{{/if}}" /></div>
-									<div class="col-lg-3"><cf_input type="text" class="form-control" name="value" placeholder="Setting Value" value="{{##if view_state.version_setting.value}}{{view_state.version_setting.value}}{{/if}}" /></div>
-									<div class="col-lg-3"><cf_input type="text" class="form-control" name="default" placeholder="Default Value" value="{{##if view_state.version_setting.default}}{{view_state.version_setting.default}}{{/if}}" /></div>
+									<div class="col-lg-3"><cf_input type="text" class="form-control" name="value" placeholder="Setting Value" value="{{##if view_state.version_setting.value}}{{view_state.version_setting.value}}{{/if}}" /></div>									
 									<div class="col-lg-3">
 										<cf_input type="hidden" name="goto" value="/index.cfm/images/{{data.image.id}}/" />
-										<cf_input type="hidden" name="preserve_response" vale="version_setting" />
+										<cf_input type="hidden" name="preserve_response" value="version_setting_response" />
 										<cf_button type="submit" name="submit" class="btn btn-primary btn-xs" value="true">Add New</cf_button>
 										
 										<cf_zeroform action="/index.cfm/images/{{data.image.id}}/read" method="post" name="cancel_setting">
@@ -93,15 +92,39 @@
 							{{/if}}
 				
 							{{#each data.image.version_settings}}
-							<div class="row">
-								<div class="col-lg-3">{{key}}</div>
-								<div class="col-lg-3">{{value}}</div>
-								<div class="col-lg-3">{{default}}</div>
-								<div class="col-lg-3">
-									<a href="/index.cfm/apps/{{@root.data.id}}/version_settings/{{id}}" type="submit" name="submit" class="btn btn-primary btn-xs" value="true">Edit</a>
-									<button type="submit" name="submit" class="btn btn-primary btn-xs" value="true">Delete</button>
+								{{#if edit}}
+								<div class="row alert alert-info">
+									<cf_zeroform name="save_setting_{{id}}" method="post" action="/index.cfm/images/{{data.image.id}}/version_settings/{{id}}" style="display:inline;">				
+										<div class="col-lg-3"><cf_input type="text" class="form-control" name="key" placeholder="Setting Key" value="{{key}}" /></div>
+										<div class="col-lg-3"><cf_input type="text" class="form-control" name="value" placeholder="Setting Value" value="{{value}}" /></div>									
+										<div class="col-lg-3">
+											<cf_input type="hidden" name="goto" value="/index.cfm/images/{{data.image.id}}/" />
+											<cf_input type="hidden" name="preserve_response" value="version_setting_response" />
+											<cf_button type="submit" name="submit" class="btn btn-primary btn-xs" value="true">Save</cf_button>
+											
+											<cf_zeroform action="/index.cfm/images/{{data.image.id}}/read" method="post" name="cancel_setting_{{id}}">
+												<cf_button name="cancel_setting" class="btn btn-default btn-xs" value="true">Cancel</cf_button>
+											</cf_zeroform>
+										</div>								
+									</cf_zeroform>
 								</div>
-							</div>
+								{{else}}
+									<div class="row">
+										<div class="col-lg-3">{{key}}</div>
+										<div class="col-lg-3">{{value}}</div>								
+										<div class="col-lg-3">
+											<cf_zeroform name="edit_setting_{{id}}" action="/index.cfm/images/{{data.image.id}}/read" method="post">
+												<cf_button name="edit_setting" class="btn btn-primary btn-xs" value="{{id}}">Edit Setting</cf_button>
+											</cf_zeroform>
+											
+											<cf_zeroform name="delete_setting_{{id}}" method="post" action="/index.cfm/images/{{data.image.id}}/version_settings/{{id}}/delete" style="display:inline;">
+												<cf_input type="hidden" name="goto" value="/index.cfm/images/{{data.image.id}}/" />
+												<cf_input type="hidden" name="preserve_response" value="version_setting_response" />
+												<cf_button name="delete_setting" class="btn btn-primary btn-xs" value="true">Delete</cf_button>
+											</cf_zeroform>
+										</div>
+									</div>
+								{{/if}}
 							{{/each}}
 														
 

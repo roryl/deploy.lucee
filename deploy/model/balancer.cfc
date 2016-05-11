@@ -4,6 +4,7 @@ component persistent="true" table="balancer" {
 	property name="deployed" type="boolean" default="false";
 	property name="app" fieldtype="one-to-one" cfc="app" mappedby="balancer";
 	property name="instances" fieldtype="one-to-many" cfc="balancerInstance" fkcolumn="balancer_id" singularname="instance";
+	property name="balancerInstances" fieldtype="one-to-many" cfc="balancerInstance" fkcolumn="balancer_instance_id" singularname="balancerInstance";
 	property name="balancerSettings" fieldtype="one-to-many" cfc="balancerSetting" fkcolumn="balancer_id" singularname="balancerSetting";
 
 	/*
@@ -36,8 +37,8 @@ component persistent="true" table="balancer" {
 
 			for(var data in instances){
 				var instance = entityNew("balancerInstance");
-				this.addInstance(instance);
-				instance.setBalancer(this);
+				this.addBalancerInstance(instance);
+				instance.setBalancerInstance(this);
 				entitySave(instance);
 
 				instance.setInstanceId(data.instanceId);		
@@ -50,7 +51,7 @@ component persistent="true" table="balancer" {
 			}
 
 			//Set the first instance as primary
-			this.getInstances()[1].setIsPrimary(true);
+			this.getBalancerInstances()[1].setIsPrimary(true);
 
 			this.setDeployed(true);
 			return new throwable(value=true);

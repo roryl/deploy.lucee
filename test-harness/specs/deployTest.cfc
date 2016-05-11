@@ -8,15 +8,6 @@ component extends=""{
 
 	// executes before all test cases
 	function beforeTests(){
-				
-	}
-
-	// executes after all test cases
-	function afterTests(){
-	}
-
-	// executes before every test case
-	function setup( currentMethod ){
 		if(structKeyExists(url,"h2")){			
 			query name="drop"{
 				echo("DROP ALL OBJECTS;");
@@ -29,7 +20,15 @@ component extends=""{
 				echo("use deploy; ");
 			}		
 		}	
-		ORMReload();
+		ORMReload();				
+	}
+
+	// executes after all test cases
+	function afterTests(){
+	}
+
+	// executes before every test case
+	function setup( currentMethod ){
 	}
 
 	// executes after every test case
@@ -54,7 +53,7 @@ component extends=""{
 			var app = deploy.createApp("sampleapp", "sampleapp.com", "sample");
 			entitySave(app);
 			ORMFlush();
-			transaction action="commit";
+			transaction action="rollback";
 		}
 
 		
@@ -77,7 +76,7 @@ component extends=""{
 			entitySave(app);
 			ORMFlush();
 			var image = app.createImage("myImage",{});
-			transaction action="commit";
+			transaction action="rollback";
 		}
 
 		var getImage = deploy.getImageById(image.getId());
@@ -85,7 +84,7 @@ component extends=""{
 		expect(getImage.exists()).toBeTrue();
 		expect(getImage.get() === image).toBeTrue();
 
-		var tryImage = deploy.getImageById(2);
+		var tryImage = deploy.getImageById(10);
 		expect(tryImage.exists()).toBeFalse();
 	}
 
@@ -96,21 +95,21 @@ component extends=""{
 			entitySave(deploy);
 			var app = deploy.createApp("sampleapp", "sampleapp.com", "sample");
 			entitySave(app);
-			ORMFlush();
+			// ORMFlush();
 			var Balancer = app.createBalancer({});
-			transaction action="commit";
+			transaction action="rollback";
 		}
-
-		// writeDump(Balancer);
-		// abort;
 
 		var getBalancer = deploy.getBalancerById(Balancer.getId());
 		expect(getBalancer).toBeInstanceOf("optional");
 		expect(getBalancer.exists()).toBeTrue();
 		expect(getBalancer.get() === Balancer).toBeTrue();
 
-		var tryBalancer = deploy.getBalancerById(2);
+		var tryBalancer = deploy.getBalancerById(10);
 		expect(tryBalancer.exists()).toBeFalse();
+		// writeDump(Balancer);
+		// abort;
+
 	}
 
 	function getProviderImplementedByNameTest(){

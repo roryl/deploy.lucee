@@ -12,8 +12,25 @@ component accessors="true" {
       
 	}
 
-	public void function create( rc ) {
-      
+	public struct function create( required apps_id ) {
+    	var Deploy = variables.fw.getDeploy();
+    	var App = Deploy.getAppById(apps_id).elseThrow("Could not load the app id #apps_id#");
+    	
+    	transaction {
+    		var InstanceThrowable = App.createInstance();
+    		if(InstanceThrowable.threw()){
+    			transaction action="rollback";
+    			InstanceThrowable.reThrow();
+    		} else {
+    			transaction action="commit";
+    			var out = {
+    				"success":true,
+    				"message":"The instance was successfully created",
+    				"instance":new serializer().serializeEntity(InstanceThrowable.get())
+    			}
+    		}    		
+    	}
+    	return out;
 	}
 
 	public void function read( rc ) {

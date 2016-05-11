@@ -28,7 +28,7 @@ component{
 	} else {
 		this.datasources["deploy"] = {
 			  class: 'org.gjt.mm.mysql.Driver'
-			, connectionString: 'jdbc:mysql://192.168.33.10:3306/deploy?useUnicode=true&characterEncoding=UTF-8&useLegacyDatetimeCode=false&allowMultiQueries=true'
+			, connectionString: 'jdbc:mysql://192.168.33.10:3306/deploy?useUnicode=true&characterEncoding=UTF-8&useLegacyDatetimeCode=false&allowMultiQueries=true&autoReconnect=true'
 			, username: 'deploy'
 			, password: "123456"
 		};
@@ -48,6 +48,7 @@ component{
 
 	// request start
 	public boolean function onRequestStart( String targetPage ){
+		setting requesttimeout="100";		
 		return true;
 	}
 }

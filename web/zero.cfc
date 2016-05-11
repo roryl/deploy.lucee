@@ -1,7 +1,8 @@
 component extends="one" {	
 
 	copyCGI = duplicate(CGI);	
-	
+	// writeDump(form);
+	// abort;
 	/*
 	Global framework rewrite of the request scope. Allows mimicing HTML 5 
 	nested form feature, which is not currently supported by Internet Explorer

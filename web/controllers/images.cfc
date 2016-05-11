@@ -22,7 +22,9 @@ component accessors="true" {
 	public struct function read( required numeric id,
 								 deployed_response={},
                                  add_setting=false,
-                                 cancel_setting=false
+                                 cancel_setting=false,
+                                 numeric edit_setting=0,
+                                 version_setting_response
 								 ) {   	        
         // writeDump(arguments);
     	var Deploy = variables.fw.getDeploy();
@@ -50,13 +52,20 @@ component accessors="true" {
 	    			"base_script":Image.getBaseScript(),
                     "deployed_response":deployed_response,                    
 	    		},
-                "view_state":{
+                "view_state":{                    
                     "add_setting":add_setting,
-                    "setting_tab":(add_setting OR cancel_setting),
-                    "script_tab":!(add_setting OR cancel_setting),
+                    "setting_tab":(add_setting OR cancel_setting OR edit_setting OR arguments.keyExists("version_setting_response")),
+                    "script_tab":!(add_setting OR cancel_setting OR edit_setting OR arguments.keyExists("version_setting_response")),
                     "versions_tab":false,
                 }
-	    	}            
+	    	}
+
+            for(var setting in out.data.image.version_settings){
+                if(setting.id == edit_setting){
+                    setting["edit"] = true;
+                }
+            }
+
 	    	return out;    		
     	}
 	}

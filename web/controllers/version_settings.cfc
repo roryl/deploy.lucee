@@ -22,14 +22,13 @@ component accessors="true" {
 
 	public struct function create( required numeric images_id,
 								 required string key,
-								 required string value,
-								 required string default) {
+								 required string value) {
 
       	var Deploy = variables.fw.getDeploy();
     	var Image = Deploy.getImageById(images_id).elseThrow("Could not load the app id #images_id#");
 
     	transaction {
-    		var versionSetting = Image.putVersionSetting(key, value, default);    	
+    		var versionSetting = Image.putVersionSetting(key, value);    	
     		transaction action="commit";
     	}
 
@@ -60,13 +59,15 @@ component accessors="true" {
 	}
 
 	public struct function update( 	required numeric images_id,
-									required numeric id) {
+									required numeric id,
+                                    required string key,
+                                    required string value) {
 
     	var Deploy = variables.fw.getDeploy();
     	var Image = Deploy.getImageById(images_id).elseThrow("Could not load the app id #images_id#");
     	
     	transaction {
-    		var versionSetting = App.putVersionSetting(key, value, default);    	
+    		var versionSetting = Image.putVersionSetting(key, value);    	
     		transaction action="commit";
     	}
 
@@ -79,8 +80,22 @@ component accessors="true" {
     	return out;
 	}
 
-	public void function delete( rc ) {
-      
+	public struct function delete(   required numeric id,
+                                   required numeric images_id ) {
+        var Deploy = variables.fw.getDeploy();
+        var Image = Deploy.getImageById(images_id).elseThrow("Could not load the app id #images_id#");
+        var VersionSetting = Image.getVersionSettingById(id).elseThrow("Could not load the setting #id#");
+
+        transaction {
+            entityDelete(VersionSetting);
+            transaction action="commit";
+        }
+
+        var out = {
+            "success":true,
+            "message":"The version setting has been deleted"
+        }
+        return out;
 	}
 
 	public struct function new( images_id ){

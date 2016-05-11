@@ -172,7 +172,8 @@ component accessors="true" {
 			},
 			balancer:{
 				instances:{}
-			}
+			},
+			instances:{}
 		});
 		return out;
 	}

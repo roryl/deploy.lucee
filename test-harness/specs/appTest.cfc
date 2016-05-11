@@ -8,15 +8,6 @@ component extends="testbox.system.baseSpec"{
 
 	// executes before all test cases
 	function beforeTests(){
-				
-	}
-
-	// executes after all test cases
-	function afterTests(){
-	}
-
-	// executes before every test case
-	function setup( currentMethod ){
 		if(structKeyExists(url,"h2")){			
 			query name="drop"{
 				echo("DROP ALL OBJECTS;");
@@ -29,7 +20,15 @@ component extends="testbox.system.baseSpec"{
 				echo("use deploy; ");
 			}		
 		}	
-		ORMReload();
+		ORMReload();				
+	}
+
+	// executes after all test cases
+	function afterTests(){
+	}
+
+	// executes before every test case
+	function setup( currentMethod ){
 	}
 
 	// executes after every test case
@@ -50,15 +49,15 @@ component extends="testbox.system.baseSpec"{
 	function getProviderTest(){
 		transaction {
 			var app = createApp();			
-			transaction action="commit";
+			expect(app.getProviderImplemented()).toBeInstanceOf("provider");
+			transaction action="rollback";
 		}
 		// writeDump(app);
 		// abort;
-		ORMFlush();
+		// ORMFlush();
 		// // writeDump(app);
 		// writeDump(app.getCurrentVersion());
 		// abort;
-		expect(app.getProviderImplemented()).toBeInstanceOf("provider");
 	}
 
 	function createMigrationWrongVersionsTest(){
@@ -122,7 +121,7 @@ component extends="testbox.system.baseSpec"{
 
 			expect(arrayLen(Migration.getMigrationSteps())).toBe(5);
 
-			transaction action="commit";
+			transaction action="rollback";
 		}
 
 	}
@@ -133,7 +132,7 @@ component extends="testbox.system.baseSpec"{
 			var balancer = app.createBalancer({});
 			expect(balancer).toBeInstanceOf("balancer");
 			expect(balancer.isStopped()).toBeTrue();
-			transaction action="commit";
+			transaction action="rollback";
 		}
 		return balancer;
 	}
@@ -150,7 +149,7 @@ component extends="testbox.system.baseSpec"{
 			var balancer = app.createBalancer({});
 			expect(instance).toBeInstanceOf("instance");
 			expect(balancer.hasInstance(instance)).toBeFalse();	
-			transaction action="commit";			
+			transaction action="rollback";			
 		}
 		return Instance;
 	}
@@ -159,14 +158,14 @@ component extends="testbox.system.baseSpec"{
 		transaction {
 			var app = createApp();
 			var image = app.createImage("My Name", {"os":"centos", "size":"512gb", "region":"nyc1"});
-			transaction action="commit";
+			var images = app.getImages();
+			// writeDump(app.getImages());
+			expect(arrayLen(images)).toBe(1);
+			expect(arrayLen(images[1].getImageSettings())).toBe(3);
+			expect(app.getDefaultImage() === images[1]).toBeTrue();	
+			transaction action="rollback";
 		}
 
-		var images = app.getImages();
-		// writeDump(app.getImages());
-		expect(arrayLen(images)).toBe(1);
-		expect(arrayLen(images[1].getImageSettings())).toBe(3);
-		expect(app.getDefaultImage() === images[1]).toBeTrue();	
 		return image;
 	}
 
@@ -176,15 +175,16 @@ component extends="testbox.system.baseSpec"{
 			var app = createApp();
 			var image = app.createImage("My Name", {"os":"centos", "size":"512gb", "region":"nyc1"});
 			var image = app.createImage("My Name 2", {"os":"centos", "size":"512gb", "region":"nyc1"});
-			transaction action="commit";
+
+			var images = app.getImages();
+			// writeDump(app.getImages());
+			expect(arrayLen(images)).toBe(2);
+			expect(arrayLen(images[1].getImageSettings())).toBe(3);
+			expect(app.getDefaultImage() === images[1]).toBeTrue();	
+			expect(app.getDefaultImage() === images[2]).toBeFalse();
+			transaction action="rollback";
 		}
 
-		var images = app.getImages();
-		// writeDump(app.getImages());
-		expect(arrayLen(images)).toBe(2);
-		expect(arrayLen(images[1].getImageSettings())).toBe(3);
-		expect(app.getDefaultImage() === images[1]).toBeTrue();	
-		expect(app.getDefaultImage() === images[2]).toBeFalse();
 		
 	}
 	

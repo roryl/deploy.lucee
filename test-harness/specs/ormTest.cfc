@@ -8,16 +8,6 @@ component extends=""{
 
 	// executes before all test cases
 	function beforeTests(){
-				
-	}
-
-	// executes after all test cases
-	function afterTests(){
-	}
-
-	// executes before every test case
-	function setup( currentMethod ){
-		
 		if(structKeyExists(url,"h2")){			
 			query name="drop"{
 				echo("DROP ALL OBJECTS;");
@@ -31,14 +21,24 @@ component extends=""{
 			}		
 		}
 
-		ORMReload();
-		ORMGetSession().close();
+		ORMReload();				
+	}
+
+	// executes after all test cases
+	function afterTests(){
+		// ORMGetSession().close();
+	}
+
+	// executes before every test case
+	function setup( currentMethod ){
+		
+		// ORMGetSession().close();
 	}
 
 	// executes after every test case
 	function teardown( currentMethod ){
 		//Close the ORM session on each test so that a new session is created on the next test
-		ORMGetSession().close();
+		// ORMGetSession().close();
 	}
 
 /*********************************** TEST CASES BELOW ***********************************/
@@ -138,16 +138,17 @@ component extends=""{
 		}
 
 		transaction {
-			evaluate("entitySave(create#entityName#())");
-			transaction action="commit";
+			var entity = evaluate('create#entityName#()');
+			entitySave(entity);
+			// ORMFlush();
+			// expect(arrayLen(entityLoad("#entityName#"))).toBe(1);
+			transaction action="rollback";
 		}
-		expect(arrayLen(entityLoad("#entityName#"))).toBe(1);
-
 	}
 
-	function createDeployTest(){		
-		genericEntity("deploy");
-	}
+	// function createDeployTest(){		
+	// 	genericEntity("deploy");
+	// }
 
 	function createAppTest(){		
 		genericEntity("app");
@@ -219,13 +220,16 @@ component extends=""{
 			evaluate("#one#.add#many#(getVariable('#many#'))");
 			evaluate("#many#.set#one#(getVariable('#one#'))");
 			entitySave(getVariable(many));
-			transaction action="commit";			
-		}
+			// ORMFlush();
 
-		left = entityLoad(one)[1];
-		right = evaluate("left.get#many##plural#()");		
-		expect(right).toHaveLength(1);
-		evaluate("expect(right[1].get#one#()).toBe(getVariable(one))");
+			left = getVariable(one);
+			// entityReload(left);
+			right = evaluate("left.get#many##plural#()");
+			// entityReload(right);
+			expect(right).toHaveLength(1);
+			evaluate("expect(right[1].get#one#()).toBe(getVariable(one))");
+			transaction action="rollback";			
+		}
 	}
 
 	/**
@@ -242,10 +246,10 @@ component extends=""{
 				#right# = create#right#();
 				#left#.set#right#(#right#);
 				#right#.set#left#(#left#);
-				transaction action='commit';
+				expect(#left#.get#right#()).toBe(#right#);
+				expect(#right#.get#left#()).toBe(#left#);			
+				transaction action='rollback';
 			}
-			expect(#left#.get#right#()).toBe(#right#);
-			expect(#right#.get#left#()).toBe(#left#);			
 			");			
 		}
 		fileWrite("executecode.cfm", "<cfscript>#code#</cfscript>");
@@ -294,11 +298,7 @@ component extends=""{
 
 	function imageImageSettingRelationTest(){
 		genericOneToMany("image", "imageSetting");
-	}
-
-	function appVersionSettingRelationTest(){
-		genericOneToMany("app", "versionSetting");
-	}
+	}	
 
 	function versionVersionSettingRelationTest(){
 		genericOneToMany("version", "versionSetting");

@@ -56,11 +56,10 @@ component persistent="true" table="image" {
 		return true;
 	}
 
-	public versionSetting function putVersionSetting(required string key, required string value, required string default){
+	public versionSetting function putVersionSetting(required string key, required string value){
 
 		var key = arguments.key;
-		var value = arguments.value;
-		var default = arguments.default;
+		var value = arguments.value;		
 
 		var VersionSetting = entityLoad("versionSetting", {image:this, key:key}, true);
 		if(isNull(VersionSetting)){
@@ -70,8 +69,7 @@ component persistent="true" table="image" {
 			VersionSetting.setImage(this);
 		}
 		versionSetting.setKey(key);
-		versionSetting.setValue(value);
-		versionSetting.setDefault(default);
+		versionSetting.setValue(value);		
 		return versionSetting;
 	}
 

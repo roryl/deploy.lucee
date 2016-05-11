@@ -73,6 +73,7 @@ component extends="zero" {
 	// ]
 
 	variables.framework.routes.prepend({ "$RESOURCES" = { resources = "images", nested="version_settings"} });
+	variables.framework.routes.prepend({ "$RESOURCES" = { resources = "apps", nested="instances"} });
 	variables.framework.routes.append({'$POST/images/:id/deploy*' = '/images/deploy/id/:id' });
 	variables.framework.routes.append({'$GET/images/:id/deploy*' = '/images/deploy/id/:id' });	
 	variables.framework.routes.append({'$POST/balancers/:id/deploy*' = '/balancers/deploy/id/:id' });	

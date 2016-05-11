@@ -8,15 +8,6 @@ component extends=""{
 
 	// executes before all test cases
 	function beforeTests(){
-				
-	}
-
-	// executes after all test cases
-	function afterTests(){
-	}
-
-	// executes before every test case
-	function setup( currentMethod ){
 		if(structKeyExists(url,"h2")){			
 			query name="drop"{
 				echo("DROP ALL OBJECTS;");
@@ -29,7 +20,15 @@ component extends=""{
 				echo("use deploy; ");
 			}		
 		}	
-		ORMReload();
+		ORMReload();				
+	}
+
+	// executes after all test cases
+	function afterTests(){
+	}
+
+	// executes before every test case
+	function setup( currentMethod ){
 	}
 
 	// executes after every test case
@@ -81,7 +80,7 @@ component extends=""{
 		expect(DeployedThrowable.threw()).toBeFalse();
 		expect(Balancer.isDeployed()).toBeTrue();
 
-		var Instances = Balancer.getInstances();
+		var Instances = Balancer.getBalancerInstances();
 		expect(arrayLen(instances)).toBe(2);		
 		expect(instances[1].isPrimary()).toBeTrue();
 	}

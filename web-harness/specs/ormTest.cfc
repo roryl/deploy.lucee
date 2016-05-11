@@ -2,7 +2,7 @@
 * My xUnit Test
 */
 import deploy.model.semver;
-component extends=""{
+component extends="testbox.system.baseSpec"{
 	
 /*********************************** LIFE CYCLE Methods ***********************************/
 

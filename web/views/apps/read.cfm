@@ -93,7 +93,13 @@
 				<div class="panel panel-default">
 					<div class="panel-body">
 						<div>
-							<h4>Active Balanced Instances <span class="btn btn-primary"><i class="glyphicon glyphicon glyphicon-plus-sign"></i> Add Instance</span></h4>							
+							<h4>Active Balanced Instances <!--- <span class="btn btn-primary"><i class="glyphicon glyphicon glyphicon-plus-sign"></i> Add Instance</span> --->
+								<form action="/index.cfm/apps/{{data.id}}/instances" method="post" style="display:inline;">
+									<input type="hidden" name="goto" value="/index.cfm/apps/{{data.id}}" />
+									<input type="hidden" name="preserve_response" value="create_instance" />								
+									<button class="btn btn-primary btn-depoy"><i class="glyphicon glyphicon glyphicon-plus-sign"></i> Add Instance</button>
+								</form>
+							</h4>							
 							<table class="table">
 								<thead>
 									<tr>
