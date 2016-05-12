@@ -2,9 +2,13 @@
 <div class="row">
 	<article class="col-md-12 main-content" role="main">
 		<div class="row">
-			<header>
-				<h1>{{data.name}} App </h1>
-			</header>
+			<div class="col-lg-12">
+				<header>
+					<h1>{{data.name}} App </h1>
+				</header>
+			</div>
+		</div>
+		<div class="row">
 			<div class="col-md-4">
 				<table class="table table-bordered table-striped table-info text-left">
 					<thead>						

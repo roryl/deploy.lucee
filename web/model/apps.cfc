@@ -64,6 +64,11 @@ component accessors="true" {
 		return out;
 	}
 
+	public function getSecureKeyOptions(){
+		var Provider = getProviderImplemented().get();
+		return Provider.getSecureKeys();
+	}
+
 	public function setProvider(provider){
 
 		var provider = arguments.provider;

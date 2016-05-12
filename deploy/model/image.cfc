@@ -91,48 +91,52 @@ component persistent="true" table="image" {
 		var Provider = this.getApp().getProviderImplemented();
 		var imageName = this.getName();
 
-		// var InstanceThrowable = this.getApp().createInstance(image=this);
+		var InstanceThrowable = this.getApp().createInstance(image=this);
 
-		// if(InstanceThrowable.threw()){
-		// 	return new throwable(InstanceThrowable.getMessage());
-		// } else {
-		// 	TestInstance = InstanceThrowable.get();
-		// }
-		// TestInstance = entityNew("instance");
-		// entitySave(TestInstance);
-		var imageName = "#this.getApp().getName()# #imageName# test #createUUID()#";
-		var finalInstanceName = replaceNoCase(imageName, " ", "-", "all");
-		
-		var baseScript = Image.getBaseScript();
-		var settings = Image.getVersionSettings();
-		
-		for(var setting IN settings){
-			baseScript = replaceNoCase(baseScript, "{{#setting.getkey()#}}", setting.getValue(), "all");
-		}
-		
-		var ProviderMessage = Provider.createInstance(finalInstanceName, Image.getSettingsAsStruct(), baseScript);
-
-		if(providerMessage.isSuccess()){
-			var TestInstance = entityNew("instance");
-			entitySave(TestInstance);
+		if(InstanceThrowable.threw()){
+			return new throwable(InstanceThrowable.getMessage());
+		} else {
+			TestInstance = InstanceThrowable.get();
 			this.addInstanceTest(TestInstance);
 			TestInstance.setImageTest(this);
-			var App = this.getApp();
-			App.addInstance(TestInstance);
-			TestInstance.setApp(App);
-
-			var data = providerMessage.getData();
-			TestInstance.setInstanceId(data.instanceId);		
-			TestInstance.setName(data.name);
-			TestInstance.setHost(data.host);
-			TestInstance.setVcpus(data.vcpus);
-			TestInstance.setMemory(data.memory);
-			TestInstance.setDisk(data.disk);
-			TestInstance.setStatus(data.status);
 			return new throwable(value=TestInstance);
-		} else {
-			throw("Not yet implemented. Need to handle provider messages");
 		}
+
+		// TestInstance = entityNew("instance");
+		// entitySave(TestInstance);
+		// var imageName = "#this.getApp().getName()# #imageName# test #createUUID()#";
+		// var finalInstanceName = replaceNoCase(imageName, " ", "-", "all");
+		
+		// var baseScript = Image.getBaseScript() ?: "";
+		// var settings = Image.getVersionSettings();
+		
+		// for(var setting IN settings){
+		// 	baseScript = replaceNoCase(baseScript, "{{#setting.getkey()#}}", setting.getValue(), "all");
+		// }
+
+		// var ProviderMessage = Provider.createInstance(finalInstanceName, Image.getSettingsAsStruct(), baseScript);
+
+		// if(providerMessage.isSuccess()){
+		// 	var TestInstance = entityNew("instance");
+		// 	entitySave(TestInstance);
+		// 	this.addInstanceTest(TestInstance);
+		// 	TestInstance.setImageTest(this);
+		// 	var App = this.getApp();
+		// 	App.addInstance(TestInstance);
+		// 	TestInstance.setApp(App);
+
+		// 	var data = providerMessage.getData();
+		// 	TestInstance.setInstanceId(data.instanceId);		
+		// 	TestInstance.setName(data.name);
+		// 	TestInstance.setHost(data.host);
+		// 	TestInstance.setVcpus(data.vcpus);
+		// 	TestInstance.setMemory(data.memory);
+		// 	TestInstance.setDisk(data.disk);
+		// 	TestInstance.setStatus(data.status);
+		// 	return new throwable(value=TestInstance);
+		// } else {
+		// 	throw("Not yet implemented. Need to handle provider messages");
+		// }
 	}
 
 	/*

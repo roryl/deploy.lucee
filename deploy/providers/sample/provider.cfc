@@ -325,4 +325,15 @@ component {
 		return true;
 	}
 
+	public array function getSecureKeys(){
+		var out = [
+			{
+				id:"authorization",
+				name:"Authorization Token",
+				required:true
+			}
+		]
+		return out;
+	}
+
 }

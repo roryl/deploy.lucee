@@ -109,7 +109,14 @@ component persistent="true" table="app" discriminatorColumn="app_type" {
 		var name = "#this.getName()#-#Image.getName()#-#createUUID()#";
 		var name = replaceNoCase(name, " ", "-", "all");
 
-		var providerMessage = provider.createInstance(name, Image.getSettingsAsStruct(), Image.getBaseScript());
+		var baseScript = Image.getBaseScript() ?: "";
+		var versionSettings = Image.getVersionSettings() ?: [];
+		
+		for(var setting IN versionSettings){
+			baseScript = replaceNoCase(baseScript, "{{#setting.getkey()#}}", setting.getValue(), "all");
+		}
+
+		var providerMessage = provider.createInstance(name, Image.getSettingsAsStruct(), baseScript);
 
 		if(providerMessage.isSuccess()){			
 			var instance = entityNew("instance", {version:version});
@@ -187,6 +194,75 @@ component persistent="true" table="app" discriminatorColumn="app_type" {
 			VersionSetting.setVersion(Version);
 		}
 		return new throwable(value=Version);
+	}
+
+	private string function getSecretKey(){
+		if(!fileExists("encrypt.key")){
+			var key = generateSecretKey("AES");
+			fileWrite("encrypt.key", key);
+		} 
+		return fileRead("encrypt.key");
+	}
+
+	private function encryptSecureKey(required string value, required string salt){
+
+		var key = getSecretKey();
+		var encrypted = encrypt(string=value, key=key, algorithm="AES", IVorSalt=salt);
+		return encrypted;
+	}
+
+	private function decryptSecureKey(required string value, required string salt){
+		var key = getSecretKey();
+		var decrypted = decrypt(encrypted_string=value, key=key, algorithm="AES", IVorSalt=salt);
+		return decrypted;
+	}
+
+	public struct function getSecureKeysAsStruct(){
+		var SecureKeys = this.getSecureKeys();
+		var out = {}
+		if(!isNull(SecureKeys)){
+			for(var setting in SecureKeys){
+				out[setting.getKey()] = getSecureKeyValueByKey(setting.getKey());
+			}			
+		}
+		return out;
+	}
+
+	public boolean function putSecureKeyKeyValue(required string key, required string value){
+
+		var key = arguments.key;
+		var value = arguments.value;
+
+		var SecureKey = entityLoad("SecureKey", {app:this, key:key}, true);
+		if(isNull(SecureKey)){
+			var salt = createUUID();
+			var encrypted = encryptSecureKey(value, salt);
+			var SecureKey = entityNew("SecureKey", {app:this, key:key, value:encrypted, salt:salt});
+			entitySave(SecureKey);
+			this.addSecureKey(SecureKey);
+			SecureKey.setApp(this);
+		}
+		return true;
+	}
+
+	public Optional function getSecureKeyValueByKey(required string key){
+		var key = arguments.key;
+		var SecureKey = entityLoad("SecureKey", {app:this, key:key}, true);
+		if(isNull(SecureKey)){
+			return new Optional();
+		} else {
+			var value = decryptSecureKey(SecureKey.getValue(), SecureKey.getSalt());
+			return new Optional(value);
+		}
+	}
+
+
+	public boolean function putAllSettingsKeyValues(required struct settings){
+		var settings = arguments.settings;		
+		for(var setting in settings){
+			this.putSecureKeyKeyValue(key=setting, value=settings[setting]);
+		}
+		return true;
 	}
 
 	public function appIsAtZero(){

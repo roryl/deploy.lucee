@@ -99,7 +99,7 @@ component accessors="true" {
 				var out = {
 					success:true,
 					data:{
-
+						secure_keys:apps.getSecureKeyOptions(),
 						providers:apps.getProviders(),
 						balancer_options:apps.getBalancerOptions(),
 						image_options:apps.getImageOptions(),

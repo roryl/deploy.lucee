@@ -254,11 +254,37 @@ component extends="testbox.system.baseSpec"{
 			expect(arrayLen(app.getInstances())).toBe(3);
 
 			transaction action="rollback";
-
 		}
-
-
 	}
-	
+
+	public function getSecretKeyTest(){
+		var app = createApp();
+		makePublic(app,"getSecretKey","getSecretKey");
+		var key = app.getSecretKey();		
+	}
+
+	public function encryptDecryptTest(){
+
+		var app = createApp();
+		var value = "My String";
+		var salt = createUUID();
+		makePublic(app, "encryptSecureKey");
+		makePublic(app, "decryptSecureKey");
+		var encrypted = app.encryptSecureKey(value, salt);
+		var decrypted = app.decryptSecureKey(encrypted, salt);
+		expect(value == decrypted).toBeTrue();
+	}
+
+	public function putSecureKeyTest(){		
+		transaction {
+			var app = createApp();
+			app.putSecureKeyKeyValue("my key", "my value");
+			var value = app.getSecureKeyValueByKey("my key").get();
+			var values = app.getSecureKeysAsStruct();
+			expect(value == "my value").toBeTrue();	
+			expect(isStruct(values)).toBeTrue();		
+			transaction action="rollback";			
+		}
+	}	
 	
 }

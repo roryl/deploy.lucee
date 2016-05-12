@@ -85,6 +85,7 @@ component extends=""{
 		transaction {
 			var app = new appTest().createApp();
 			var Image = app.createImage("test", {os:"centOS", size:"512mb", region:"nyc1"});
+			Image.putVersionSetting("key", "value");
 			var InstanceThrowable = Image.createInstanceTest();
 			transaction action="commit";
 		}
