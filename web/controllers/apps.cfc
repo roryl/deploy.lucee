@@ -54,9 +54,10 @@ component accessors="true" {
 	public function new(name="",
 						domain_name="",
 						provider="",
-						step="0",
+						current_step_submitted="none",
 						balancer={},
 						submit=false,
+						struct secure_key={},
 						image_name,
 						image={},
 						back=false){
@@ -64,136 +65,264 @@ component accessors="true" {
 		// abort;
 		var submit = arguments.submit;
 		var back = arguments.back;
-		var step = arguments.step;
+		var current_step_submitted = arguments.current_step_submitted;
 		structDelete(arguments,"step");
 		structDelete(arguments,"submit");
 		structDelete(arguments,"back");
 
 		var Deploy = variables.fw.getDeploy();
 
+		/*
+		The order of forms that we want to display to the user
+		 */		
+		steps = [
+			"none",
+			"select_provider",
+			"secure_keys",
+			"select_balancer",
+			"configure_image",
+			"review_finalize"
+		];
+
 		if(back){
-			step = step - 2;
+			var order = steps.findNoCase(current_step_submitted);
+			order = order -2;
+			current_step_submitted = steps[order];			
 		}
 
+		var apps = new web.model.apps(Deploy);
+		apps.populate(arguments);
+
+		"select_provider" = {
+			providers:apps.getProviders(),		
+			next_step:"/index.cfm/apps/new##securekeys",			
+			current_step:"select_provider",				
+			select_provider:{
+				show:true
+			}
+		}
+
+		"secure_keys" = {
+			secure_keys_options:apps.getSecureKeyOptions(),
+			providers:apps.getProviders(),
+			next_step:"/index.cfm/apps/new##balancer",						
+			current_step:"secure_keys",							
+			select_provider:{complete:true},
+			secure_keys:{show:true}	
+		}
+
+		"select_balancer" = {
+			secure_keys_options:apps.getSecureKeyOptions(),
+			providers:apps.getProviders(),
+			balancer_options:apps.getBalancerOptions(),
+			image_options:apps.getImageOptions(),
+			next_step:"/index.cfm/apps/new##instance",						
+			current_step:"select_balancer",							
+			select_provider:{complete:true},
+			secure_keys:{complete:true},
+			select_balancer:{show:true}	
+		}
+
+		"configure_image" = {
+			secure_keys_options:apps.getSecureKeyOptions(),
+			providers:apps.getProviders(),
+			balancer_options:apps.getBalancerOptions(),
+			image_options:apps.getImageOptions(),						
+			next_step:"/index.cfm/apps/new##review",
+			current_step:"configure_image",							
+			select_provider:{complete:true},
+			secure_keys:{complete:true},
+			select_balancer:{complete:true},
+			configure_image:{show:true}
+		}
+
+		"review_finalize" = {
+			secure_keys_options:apps.getSecureKeyOptions(),
+			providers:apps.getProviders(),
+			balancer_options:apps.getBalancerOptions(),
+			image_options:apps.getImageOptions(),	
+			next_step:"/index.cfm/apps",						
+			current_step:"review_finalize",						
+			select_provider:{complete:true},
+			secure_keys:{complete:true},
+			select_balancer:{complete:true},
+			configure_image:{complete:true},
+			review_finalize:{show:true}
+		}
+
+		var out = {}
+
+		if(current_step_submitted == "none"){			
+			out.success=true;
+			out.data=select_provider			
+		}
+
+		if(current_step_submitted == "select_provider"){
+			if(apps.isValid()){
+				out.success=true;
+				out.data=secure_keys
+			} else {
+				out.success=false;
+				out.data=select_provider;
+				out.data.errors = apps.getErrors();
+			}
+		}
+
+		if(current_step_submitted == "secure_keys"){
+			if(apps.isValid()){
+				out.success=true;
+				out.data=select_balancer
+			} else {
+				out.success=false;
+				out.data=select_provider;
+				out.data.errors = apps.getErrors();
+			}
+		}
+
+		if(current_step_submitted == "select_balancer"){
+			if(apps.isValid()){
+				out.success=true;
+				out.data=configure_image
+			} else {
+				out.success=false;
+				out.data=secure_keys;
+				out.data.errors = apps.getErrors()
+			}
+		}
+
+		if(current_step_submitted == "configure_image"){
+			if(apps.isValid()){
+				out.success=true;
+				out.data=review_finalize;
+			} else {
+				out.success=false;
+				out.data=configure_image;
+				out.data.errors = apps.getErrors()
+			}
+		}
+
+		// writeDump(out);
+		// abort;
 
 		// writeDump(form);
 		// writeDump(arguments);
 		// abort;
 		// 
-		if(step == "0"){
-			var apps = new web.model.apps(Deploy);
-			var out = {
-				success:true,
-				data:{
-					providers:apps.getProviders(),		
-					next_step:"/index.cfm/apps/new##balancer",
-					step:"1",
-					step_1:true			
-				}
-			}	
-		}
-		else if(step == "1"){
-			var apps = new web.model.apps(Deploy);
-			apps.populate(arguments);
-			if(apps.isValid()){			
-				var out = {
-					success:true,
-					data:{
-						secure_keys:apps.getSecureKeyOptions(),
-						providers:apps.getProviders(),
-						balancer_options:apps.getBalancerOptions(),
-						image_options:apps.getImageOptions(),
-						next_step:"/index.cfm/apps/new##instance",
-						step_1_complete:true,
-						step:"2",
-						step_2:true			
-					}
-				}		
-				// writeDump(out);	
-			} else {
-				var out = {
-					success:false,
-					data:{
-						step:"1",
-						step_1:true,
-						errors:apps.getErrors()
-					}
-				}
-			}			
-		} else if(step == "2"){
-			var apps = new web.model.apps(Deploy);
-			apps.populate(arguments);
-			// writeDump(apps);
-			if(apps.isValid()){		
+		// if(step == "0"){
+		// 	var apps = new web.model.apps(Deploy);
+		// 	var out = {
+		// 		success:true,
+		// 		data:{
+		// 			providers:apps.getProviders(),		
+		// 			next_step:"/index.cfm/apps/new##balancer",
+		// 			step:"1",					
+		// 			select_provider:{
+		// 				show:true
+		// 			}		
+		// 		}
+		// 	}	
+		// }
+		// else if(step == "1"){
+		// 	var apps = new web.model.apps(Deploy);
+		// 	apps.populate(arguments);
+		// 	if(apps.isValid()){			
+		// 		var out = {
+		// 			success:true,
+		// 			data:{
+		// 				secure_keys_options:apps.getSecureKeyOptions(),
+		// 				providers:apps.getProviders(),
+		// 				balancer_options:apps.getBalancerOptions(),
+		// 				image_options:apps.getImageOptions(),
+		// 				next_step:"/index.cfm/apps/new##instance",						
+		// 				step:"2",						
+		// 				select_provider:{complete:true},
+		// 				select_balancer:{show:true}			
+		// 			}
+		// 		}		
+		// 		// writeDump(out);	
+		// 	} else {
+		// 		var out = {
+		// 			success:false,
+		// 			data:{
+		// 				step:"1",						
+		// 				providers:apps.getProviders(),
+		// 				errors:apps.getErrors(),
+		// 				select_provider:{show:true}
+		// 			}
+		// 		}
+		// 	}			
+		// } else if(step == "2"){
+		// 	var apps = new web.model.apps(Deploy);
+		// 	apps.populate(arguments);
+		// 	// writeDump(apps);
+		// 	if(apps.isValid()){		
 				
-				var out = {
-					success:true,
-					data:{
-						providers:apps.getProviders(),
-						balancer_options:apps.getBalancerOptions(),
-						image_options:apps.getImageOptions(),						
-						next_step:"/index.cfm/apps/new##review",
-						step:"3",
-						step_1_complete:true,
-						step_2_complete:true,
-						step_3:true			
-					}
-				}	
-				// writeDump(out);
-				// writeDump(form);
-			} else {
-				var out = {
-					success:false,
-					data:{
-						step:"2",
-						step_2:true,
-						errors:apps.getErrors()
-					}
-				}
-			}
-		} else if(step == "3"){
-			var apps = new web.model.apps(Deploy);
-			apps.populate(arguments);
-			// writeDump(apps);
-			// abort;
-			if(apps.isValid()){
-				var out = {
-					success:true,
-					data:{
-						providers:apps.getProviders(),
-						balancer_options:apps.getBalancerOptions(),
-						image_options:apps.getImageOptions(),	
-						next_step:"/index.cfm/apps",						
-						step:"4",
-						step_1_complete:true,
-						step_2_complete:true,
-						step_3_complete:true,
-						step_4:true			
-					}
-				}	
-			} else {
-				var out = {
-					success:false,
-					data:{
-						step:"3",
-						step_3:true,
-						errors:apps.getErrors()
-					}
-				}
-			}
-		} else if(step == "4"){
-			// writeDump(form);
-			// abort;
-			// forward
-			// template="/index.cfm/apps" ;
-		}
-		else {
-			var out = {
-					success:false,
-					message:"Invalid request"
-				}	
-			return out;
-		}
+		// 		var out = {
+		// 			success:true,
+		// 			data:{
+		// 				providers:apps.getProviders(),
+		// 				balancer_options:apps.getBalancerOptions(),
+		// 				image_options:apps.getImageOptions(),						
+		// 				next_step:"/index.cfm/apps/new##review",
+		// 				step:"3",						
+		// 				select_provider:{complete:true},
+		// 				select_balancer:{complete:true},
+		// 				configure_image:{show:true}
+		// 			}
+		// 		}	
+		// 		// writeDump(out);
+		// 		// writeDump(form);
+		// 	} else {
+		// 		var out = {
+		// 			success:false,
+		// 			data:{
+		// 				step:"2",						
+		// 				errors:apps.getErrors()
+		// 			}
+		// 		}
+		// 	}
+		// } else if(step == "3"){
+		// 	var apps = new web.model.apps(Deploy);
+		// 	apps.populate(arguments);
+		// 	// writeDump(apps);
+		// 	// abort;
+		// 	if(apps.isValid()){
+		// 		var out = {
+		// 			success:true,
+		// 			data:{
+		// 				providers:apps.getProviders(),
+		// 				balancer_options:apps.getBalancerOptions(),
+		// 				image_options:apps.getImageOptions(),	
+		// 				next_step:"/index.cfm/apps",						
+		// 				step:"4",						
+		// 				select_provider:{complete:true},
+		// 				select_balancer:{complete:true},
+		// 				configure_image:{complete:true},
+		// 				review_finalize:{show:true}
+		// 			}
+		// 		}	
+		// 	} else {
+		// 		var out = {
+		// 			success:false,
+		// 			data:{
+		// 				step:"3",						
+		// 				errors:apps.getErrors()
+		// 			}
+		// 		}
+		// 	}
+		// } else if(step == "4"){
+		// 	// writeDump(form);
+		// 	// abort;
+		// 	// forward
+		// 	// template="/index.cfm/apps" ;
+		// }
+		// else {
+		// 	var out = {
+		// 			success:false,
+		// 			message:"Invalid request"
+		// 		}	
+		// 	return out;
+		// }
 
 		for(var key in arguments){
 			out.data[key] = arguments[key];

@@ -2,11 +2,12 @@ component accessors="true" {
 	property name="name";
 	property name="domain_name";
 	property name="provider" default="sample";
-	property name="step";
+	property name="current_step_submitted";
 	property name="submit";
 	property name="balancer";
 	property name="image_name";
 	property name="image";
+	property name="secure_key";
 
 	variables.errors = [];
 
@@ -45,6 +46,13 @@ component accessors="true" {
 		}
 	}
 
+	public function setSecure_Key(required struct secure_key){
+		variables.secure_key = secure_key;
+		for(var key in secure_key){
+			variables.secure_key[key] = encryptSecureKey(variables.secure_key[key]);
+		}
+	}
+
 	public function setDomain_Name(required domain_name){
 		if(listLen(domain_name,".") LT 2){
 			addError("That is not a valid domain");
@@ -64,9 +72,16 @@ component accessors="true" {
 		return out;
 	}
 
-	public function getSecureKeyOptions(){
+	public array function getSecureKeyOptions(){
 		var Provider = getProviderImplemented().get();
-		return Provider.getSecureKeys();
+		var keys = Provider.getSecureKeys();
+		var secureKeys = this.getSecure_Key();
+		for(key in keys){
+			if(structKeyExists(secureKeys, key.id)){
+				key.value = secureKeys[key.id];
+			}
+		}				
+		return keys;
 	}
 
 	public function setProvider(provider){
@@ -128,5 +143,26 @@ component accessors="true" {
 		}
 
 		return options;
+	}
+
+	private string function getSecretKey(){
+		if(!fileExists("encrypt.key")){
+			var key = generateSecretKey("AES");
+			fileWrite("encrypt.key", key);
+		} 
+		return fileRead("encrypt.key");
+	}
+
+	private function encryptSecureKey(required string value){
+
+		var key = getSecretKey();
+		var encrypted = encrypt(string=value, key=key, algorithm="AES", encoding="Base64");
+		return encrypted;
+	}
+
+	private function decryptSecureKey(required string value){
+		var key = getSecretKey();
+		var decrypted = decrypt(encrypted_string=value, key=key, algorithm="AES", encoding="Base64");
+		return decrypted;
 	}
 }

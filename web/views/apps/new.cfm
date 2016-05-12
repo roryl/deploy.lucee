@@ -17,7 +17,7 @@
 			{{/if}}
 			<div class="col-md-8">
 				<form method="post" action="{{data.next_step}}">
-					<input type="hidden" value="{{data.step}}" name="step">
+					<input type="hidden" value="{{data.current_step}}" name="current_step_submitted">
 					<ul class="step-text" style="margin-top:0;">
 						<li>
 							<!--- STEP 1 --->
@@ -26,18 +26,18 @@
 										
 							<div class="form-group">
 								<label for="exampleInputEmail1">App Name</label>
-								<input type="text" class="form-control disabled" name="name" placeholder="friendly name" {{#if data.name}}value="{{data.name}}"{{/if}} {{#unless data.step_1}}readonly{{/unless}}>
+								<input type="text" class="form-control disabled" name="name" placeholder="friendly name" {{#if data.name}}value="{{data.name}}"{{/if}} {{#unless data.select_provider.show}}readonly{{/unless}}>
 							</div>
 							<div class="form-group">
 								<label for="domain_name">Domain Name</label>
-								<input type="text" class="form-control" name="domain_name" placeholder="domain.com" {{#if data.domain_name}}value="{{data.domain_name}}"{{/if}} {{#unless data.step_1}}readonly{{/unless}}>
+								<input type="text" class="form-control" name="domain_name" placeholder="domain.com" {{#if data.domain_name}}value="{{data.domain_name}}"{{/if}} {{#unless data.select_provider.show}}readonly{{/unless}}>
 							</div>
 							<div class="form-group">
 								<label for="domain_name">Provider</label>
 								<p>Providers are the cloud platforms that this app will create instances on. An app can only live in a single provider</p>
 								<select class="form-control" name="provider" 
 									{{#if data.provider}}value="{{data.provider}}"{{/if}}
-									{{#unless data.step_1}}readonly{{/unless}}>
+									{{#unless data.select_provider.show}}readonly{{/unless}}>
 									{{#each data.providers}}
 									<option value={{name}} {{#if selected}}selected="true"{{/if}}>{{name}}</option>
 									{{/each}}
@@ -45,7 +45,22 @@
 							</div>
 						</li>
 
-						<li {{#unless data.step_1_complete}}style="display:none;"{{/unless}}>
+						<li {{#unless data.select_provider.complete}}style="display:none;"{{/unless}}>
+							<!--- STEP 2 --->
+							<div>
+								<a id="balancer"></a>
+								<h2>Provider Secure Keys</h2>
+								<p>The provider {{data.provider}} needs the following credentials to work</p>
+								{{#each data.secure_keys_options}}
+								<div class="form-group">
+								<label for="exampleInputEmail1">{{name}}</label>
+								<input type="password" class="form-control disabled" name="secure_key.{{id}}" placeholder="friendly name" {{#if value}}value="{{value}}"{{/if}} {{#unless data.secure_keys.show}}readonly{{/unless}} >
+							</div>
+								{{/each}}
+							</div>
+						</li>
+
+						<li {{#unless data.secure_keys.complete}}style="display:none;"{{/unless}}>
 							<!--- STEP 2 --->
 							<div>
 								<a id="balancer"></a>
@@ -55,7 +70,7 @@
 								<label for="domain_name">Balancers</label>
 								<select class="form-control" name="balancer.{{id}}" 
 									{{#if data.balancer}}value="{{data.balancer}}"{{/if}}
-									{{#unless data.step_2}}readonly{{/unless}}>
+									{{#unless data.select_balancer.show}}readonly{{/unless}}>
 										{{#each options}}
 										<option value="{{id}}" {{#if selected}}selected{{/if}}>{{name}}</option>
 										{{/each}}
@@ -64,7 +79,9 @@
 							</div>
 						</li>
 
-						<li {{#unless data.step_2_complete}}style="display:none;"{{/unless}}>
+
+
+						<li {{#unless data.select_balancer.complete}}style="display:none;"{{/unless}}>
 							<!--- STEP 2 --->
 							<div>
 								<a id="instance"></a>
@@ -74,13 +91,13 @@
 								<div class="form-group">
 									<label for="image_name">Image Name</label>
 									<p>Give your image a friendly name to refer to</p>
-									<input type="text" class="form-control disabled" name="image_name" placeholder="friendly name" {{#if data.image_name}}value="{{data.image_name}}"{{/if}} {{#unless data.step_3}}readonly{{/unless}}>
+									<input type="text" class="form-control disabled" name="image_name" placeholder="friendly name" {{#if data.image_name}}value="{{data.image_name}}"{{/if}} {{#unless data.configure_image.show}}readonly{{/unless}}>
 								</div>
 
 								{{#each data.image_options}}
 									<label for="image.{{id}}">{{name}}</label>
 									<select class="form-control" name="image.{{id}}" 
-										{{#unless data.step_3}}readonly{{/unless}}>
+										{{#unless data.configure_image.show}}readonly{{/unless}}>
 										>
 										{{#each options}}
 											<option value="{{id}}" {{#if selected}}selected{{/if}}>{{name}}</option>
@@ -126,11 +143,11 @@
 									{{#if data.boot_script}}
 										value="{{data.boot_script}}"
 									{{/if}}
-									{{#unless data.step_3}}readonly{{/unless}}>{{#if data.boot_script}}{{data.boot_script}}{{/if}}</textarea>
+									{{#unless data.configure_image.show}}readonly{{/unless}}>{{#if data.boot_script}}{{data.boot_script}}{{/if}}</textarea>
 							</div>
 						</li>
 
-						<li {{#unless data.step_3_complete}}style="display:none;"{{/unless}}>
+						<li {{#unless data.configure_image.complete}}style="display:none;"{{/unless}}>
 							<!--- STEP 2 --->
 							<div>
 								<a id="review"></a>
@@ -139,11 +156,11 @@
 							</div>
 						</li>											
 					</ul>
-					{{#unless data.step_1}}
+					{{#unless data.select_provider.show}}
 					<button type="submit" name="back" class="btn btn-default" value="true">Back</button>										
 					{{/unless}}
 
-					{{#if data.step_4}}	
+					{{#if data.review_finalize.show}}	
 						<input type="hidden" name="goto" value="/index.cfm/apps/:data.id" />
 						<button type="submit" name="submit" class="btn btn-success" value="true">Create App</button>
 					{{else}}
