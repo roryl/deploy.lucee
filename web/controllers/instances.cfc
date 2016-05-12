@@ -121,5 +121,23 @@ component accessors="true" {
 			throw("Instance is currently being balanced. Can only balance unbalanced instances");
 		}
 	}
+
+	public struct function refresh( id ){
+
+		var Deploy = variables.fw.getDeploy();
+		var Instance = Deploy.getInstanceById(id).elseThrow("Could not load the instance ID");
+		transaction {
+			Instance.refresh();
+			transaction action="commit";			
+		}
+		var out = {
+			"success":true,
+			"message":"The instance was successfulyl refreshed",
+			"data":{
+				"instance":new serializer().serializeEntity(Instance)
+			}
+		}
+		return out;
+	}
 	
 }

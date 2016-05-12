@@ -61,7 +61,9 @@ component persistent="true" table="deploy" discriminatorColumn="deploy_type" {
 		if(isNull(Instance)){
 			return new Optional();
 		} else {
-			if(Instance.getApp().getDeploy() === this){
+			if(instance.hasImageTest() AND instance.getImageTest().getApp().getDeploy() === this){
+				return new Optional(Instance);
+			} else if(instance.getApp().getDeploy() === this){
 				return new Optional(Instance);
 			} else {
 				return new Optional();
@@ -75,6 +77,9 @@ component persistent="true" table="deploy" discriminatorColumn="deploy_type" {
 		if(Instance.hasBalancer()){
 			return new throwable("Cannot delete an instance which is actively being balanced. You must remove it from the load balancer first");
 		} else {
+
+			var Provider = Instance.getApp().getProviderImplemented();
+			Provider.destroyInstance(Instance.getInstanceId());
 			entityDelete(Instance);
 			return new throwable(value=true);
 		}

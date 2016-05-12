@@ -191,6 +191,11 @@
 										<input type="hidden" name="goto" value="/index.cfm/images/{{data.image.id}}"/>					
 										<input type="hidden" name="preserve_response" value="instance_delete_response" />
 										<button class="btn btn-primary btn-depoy btn-xs"><i class="fa fa-recycle"></i> Delete</button>
+									</form>
+									<form method="post" action="/index.cfm/instances/{{id}}/refresh" style="display:inline;">
+										<input type="hidden" name="goto" value="/index.cfm/images/{{data.image.id}}"/>					
+										<input type="hidden" name="preserve_response" value="instance_delete_response" />
+										<button class="btn btn-primary btn-depoy btn-xs"><i class="fa fa-recycle"></i> Refresh</button>
 									</form>									
 								</td>
 							</tr>

@@ -1,7 +1,7 @@
 component accessors="true" {
 	property name="name";
 	property name="domain_name";
-	property name="provider";
+	property name="provider" default="sample";
 	property name="step";
 	property name="submit";
 	property name="balancer";
@@ -49,6 +49,19 @@ component accessors="true" {
 		if(listLen(domain_name,".") LT 2){
 			addError("That is not a valid domain");
 		}
+	}
+
+	public function getProviders(){
+		var out = [
+			{name:"sample"},
+			{name:"digitalocean"}
+		];
+		for(var provider in out){		
+			if(variables.provider == provider.name){
+				provider.selected = true;
+			}
+		}
+		return out;
 	}
 
 	public function setProvider(provider){

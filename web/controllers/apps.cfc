@@ -8,7 +8,15 @@ component accessors="true" {
 		return this;
 	}
 
-	private function serializeApp(required app){
+	private function serializeApps(required array apps){
+		var out = [];
+		for(var app in apps){
+			out.append(serializeApp(app));
+		}
+		return out;
+	}
+
+	private function serializeApp(required app app){
 
 		var app = arguments.app;
 		// writeDump(app.getBalancer());
@@ -41,6 +49,8 @@ component accessors="true" {
 		return out;
 	}
 
+
+
 	public function new(name="",
 						domain_name="",
 						provider="",
@@ -71,9 +81,11 @@ component accessors="true" {
 		// abort;
 		// 
 		if(step == "0"){
+			var apps = new web.model.apps(Deploy);
 			var out = {
 				success:true,
 				data:{
+					providers:apps.getProviders(),		
 					next_step:"/index.cfm/apps/new##balancer",
 					step:"1",
 					step_1:true			
@@ -87,6 +99,8 @@ component accessors="true" {
 				var out = {
 					success:true,
 					data:{
+
+						providers:apps.getProviders(),
 						balancer_options:apps.getBalancerOptions(),
 						image_options:apps.getImageOptions(),
 						next_step:"/index.cfm/apps/new##instance",
@@ -115,6 +129,7 @@ component accessors="true" {
 				var out = {
 					success:true,
 					data:{
+						providers:apps.getProviders(),
 						balancer_options:apps.getBalancerOptions(),
 						image_options:apps.getImageOptions(),						
 						next_step:"/index.cfm/apps/new##review",
@@ -145,6 +160,7 @@ component accessors="true" {
 				var out = {
 					success:true,
 					data:{
+						providers:apps.getProviders(),
 						balancer_options:apps.getBalancerOptions(),
 						image_options:apps.getImageOptions(),	
 						next_step:"/index.cfm/apps",						
@@ -194,7 +210,7 @@ component accessors="true" {
 
     	result = {
     		success:"true",
-    		data:serializeApp(Deploy.getApps() ?: [])
+    		data:serializeApps(Deploy.getApps() ?: [])
     	}
     	return result;
 	}

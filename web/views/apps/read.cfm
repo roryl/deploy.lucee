@@ -94,11 +94,11 @@
 					<div class="panel-body">
 						<div>
 							<h4>Active Balanced Instances <!--- <span class="btn btn-primary"><i class="glyphicon glyphicon glyphicon-plus-sign"></i> Add Instance</span> --->
-								<form action="/index.cfm/apps/{{data.id}}/instances" method="post" style="display:inline;">
+								<!--- <form action="/index.cfm/apps/{{data.id}}/instances" method="post" style="display:inline;">
 									<input type="hidden" name="goto" value="/index.cfm/apps/{{data.id}}" />
 									<input type="hidden" name="preserve_response" value="create_instance" />								
 									<button class="btn btn-primary btn-depoy"><i class="glyphicon glyphicon glyphicon-plus-sign"></i> Add Instance</button>
-								</form>
+								</form> --->
 							</h4>							
 							<table class="table">
 								<thead>
@@ -106,6 +106,7 @@
 										<td>id</td>
 										<td>status</td>
 										<td>Version</td>
+										<td>Host</td>
 										<td>Actions</td>
 									</tr>
 								</thead>
@@ -115,10 +116,15 @@
 										<td>{{instance_id}}</td>
 										<td>{{status}}</td>																			
 										<td>{{version.semver.string}}</td>
+										<td>{{host}}</td>
 										<td>
 											<form action="/index.cfm/instances/{{id}}/unbalance" method="post">
 												<input type="hidden" name="goto" value="/index.cfm/apps/{{@root.data.id}}" />
 												<button type="submit" class="btn btn-primary btn-xs">Unbalance</button>
+											</form>
+											<form action="/index.cfm/instances/{{id}}/refresh" method="post">
+												<input type="hidden" name="goto" value="/index.cfm/apps/{{@root.data.id}}" />
+												<button type="submit" class="btn btn-primary btn-xs">Refresh</button>
 											</form>
 										</td>																			
 									</tr>
@@ -142,6 +148,7 @@
 										<td>id</td>
 										<td>status</td>
 										<td>Version</td>
+										<td>Host</td>
 										<td>Actions</td>
 									</tr>
 								</thead>
@@ -151,6 +158,7 @@
 										<td>{{instance_id}}</td>
 										<td>{{status}}</td>																			
 										<td>{{version.semver.string}}</td>
+										<td>{{host}}</td>
 										<td>
 											<form action="/index.cfm/instances/{{id}}/delete" method="post" style="display:inline;">
 												<input type="hidden" name="goto" value="/index.cfm/apps/{{@root.data.id}}" />
@@ -159,6 +167,10 @@
 											<form action="/index.cfm/instances/{{id}}/balance" method="post" style="display:inline;">
 												<input type="hidden" name="goto" value="/index.cfm/apps/{{@root.data.id}}" />
 												<button type="submit" class="btn btn-primary btn-xs">Balance</button>
+											</form>
+											<form action="/index.cfm/instances/{{id}}/refresh" method="post">
+												<input type="hidden" name="goto" value="/index.cfm/apps/{{@root.data.id}}" />
+												<button type="submit" class="btn btn-primary btn-xs">Refresh</button>
 											</form>
 										</td>																			
 									</tr>

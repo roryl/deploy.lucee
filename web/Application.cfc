@@ -80,6 +80,7 @@ component extends="zero" {
 	variables.framework.routes.append({'$POST/balancers/:id/deploy*' = '/balancers/deploy/id/:id' });	
 	variables.framework.routes.append({'$POST/instances/:id/unbalance*' = '/instances/unbalance/id/:id' });	
 	variables.framework.routes.append({'$POST/instances/:id/balance*' = '/instances/balance/id/:id' });	
+	variables.framework.routes.append({'$POST/instances/:id/refresh*' = '/instances/refresh/id/:id' });	
 
 	/**
 	 * Used to manipulate request variables before they are passed to controllers.

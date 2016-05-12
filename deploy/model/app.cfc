@@ -13,6 +13,7 @@ component persistent="true" table="app" discriminatorColumn="app_type" {
 	property name="migrations" fieldtype="one-to-many" cfc="migration" fkcolumn="app_id" singularname="migration";
 	property name="images" fieldtype="one-to-many" cfc="image" fkcolumn="app_id" singularname="image";
 	property name="defaultImage" fieldtype="one-to-one" cfc="image" fkcolumn="default_image_id";
+	property name="secureKeys" fieldtype="one-to-many" cfc="secureKey" fkcolumn="app_id" singularname="secureKey";
 
  	/**
  	 * Creates a migration plan from the current version to the future version selected
@@ -77,7 +78,7 @@ component persistent="true" table="app" discriminatorColumn="app_type" {
 		if(isNull(AllInstances)){
 			return out;
 		}
-		
+
 		for(var instance in allInstances){
 			if(this.getBalancer().hasInstance(instance)){
 				continue;
@@ -105,7 +106,10 @@ component persistent="true" table="app" discriminatorColumn="app_type" {
 			return new throwable("This app did not have a default image set or an image was not passed in, cannot create an instance without an image");
 		}
 
-		var providerMessage = provider.createInstance(Image.getName(), Image.getSettingsAsStruct());
+		var name = "#this.getName()#-#Image.getName()#-#createUUID()#";
+		var name = replaceNoCase(name, " ", "-", "all");
+
+		var providerMessage = provider.createInstance(name, Image.getSettingsAsStruct(), Image.getBaseScript());
 
 		if(providerMessage.isSuccess()){			
 			var instance = entityNew("instance", {version:version});
@@ -122,7 +126,7 @@ component persistent="true" table="app" discriminatorColumn="app_type" {
 			instance.setVcpus(data.vcpus);
 			instance.setMemory(data.memory);
 			instance.setDisk(data.disk);
-			instance.setStatus("running");
+			instance.setStatus(data.status);
 			return new throwable(value=instance);
 		} else {
 			throw("Not yet implemented. Need to handle provider messages");

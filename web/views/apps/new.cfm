@@ -38,7 +38,9 @@
 								<select class="form-control" name="provider" 
 									{{#if data.provider}}value="{{data.provider}}"{{/if}}
 									{{#unless data.step_1}}readonly{{/unless}}>
-									<option>Sample</option>
+									{{#each data.providers}}
+									<option value={{name}} {{#if selected}}selected="true"{{/if}}>{{name}}</option>
+									{{/each}}
 								</select>
 							</div>
 						</li>

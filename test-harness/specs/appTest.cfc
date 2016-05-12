@@ -150,6 +150,12 @@ component extends="testbox.system.baseSpec"{
 			expect(instance).toBeInstanceOf("instance");
 			expect(balancer.hasInstance(instance)).toBeFalse();	
 			expect(app.getCurrentVersion().getInstances()[1] === instance).toBeTrue();
+
+			//Check that refreshing the instance works
+			instance.refresh();
+			expect(instance.getStatus() == "active").toBeTrue();
+			expect(instance.getHost() == "1.2.3.4").toBeTrue();
+
 			transaction action="rollback";			
 		}
 		return Instance;

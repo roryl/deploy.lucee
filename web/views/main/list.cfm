@@ -12,7 +12,7 @@
 		<th>Domain</th>
 		<th>## of Instances</th>
 		<th>Version</th>
-		<th>Last Migrated</th>
+		<!--- <th>Last Migrated</th> --->
 		<th>Manage</th>
 	</tr>
 	</thead >
@@ -22,6 +22,7 @@
 			<td>{{domain_name}}</td>
 			<td>test</td>
 			<td>{{current_version.semver.string}}</td>
+			<td><a href="/index.cfm/apps/{{id}}" class="btn btn-primary btn-xs">Manage</a></td>
 		</tr>
 		{{/each}}
 	<!--- <cfloop array="#rc.connectors#" item="connector" index="i">

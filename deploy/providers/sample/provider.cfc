@@ -5,7 +5,7 @@ component {
 		return this;
 	}
 
-	public providerMessage function createInstance(required string name, required struct imageOptions){
+	public providerMessage function createInstance(required string name, required struct imageOptions, baseScript=""){
 
 		var vm = {
 		  "droplet": {
@@ -63,7 +63,8 @@ component {
 				memory:vm.droplet.memory,
 				vcpus:vm.droplet.vcpus,
 				disk:vm.droplet.disk,
-				host:"1.2.3.4"
+				host:"",
+				status:vm.droplet.status
 			},
 			originalResponse:vm
 		})
@@ -74,8 +75,78 @@ component {
 
 	}
 
-	public instance function getInstance(required instanceId){
+	public boolean function destroyInstance(required id){		
+		if(true){
+			return true;
+		} else {
+			writeDump("Could not destory the droplet, this should not have happened");
+			writeDump(droplet);
+		};		
+	}
 
+	public providerMessage function getInstance(required instanceId){
+		var vm = {
+		  "droplet": {
+		    "id": 3164494,
+		    "name": "example.com",
+		    "memory": 512,
+		    "vcpus": 1,
+		    "disk": 20,
+		    "locked": true,
+		    "status": "active",
+		    "kernel": {
+		      "id": 2233,
+		      "name": "Ubuntu 14.04 x64 vmlinuz-3.13.0-37-generic",
+		      "version": "3.13.0-37-generic"
+		    },
+		    "created_at": "2014-11-14T16:36:31Z",
+		    "features": [
+		      "virtio"
+		    ],
+		    "backup_ids": [
+
+		    ],
+		    "snapshot_ids": [
+
+		    ],
+		    "image": {
+		    },
+		    "size": {
+		    },
+		    "size_slug": "512mb",
+		    "networks": {
+		    },
+		    "region": {
+		    },
+		    "tags": [
+
+		    ]
+		  },
+		  "links": {
+		    "actions": [
+		      {
+		        "id": 36805096,
+		        "rel": "create",
+		        "href": "https://api.digitalocean.com/v2/actions/36805096"
+		      }
+		    ]
+		  }
+		}
+
+		var message = new providerMessage(argumentCollection={
+			success:true,
+			data:{
+				instanceId:vm.droplet.id,
+				name:vm.droplet.name,
+				memory:vm.droplet.memory,
+				vcpus:vm.droplet.vcpus,
+				disk:vm.droplet.disk,
+				host:"1.2.3.4",
+				status:vm.droplet.status
+			},
+			originalResponse:vm
+		})
+		return message;
 	}
 
 	public providerMessage function deployLoadBalancer(required struct balancerOptions){
@@ -160,19 +231,19 @@ component {
 		var out = [
 			{
 				name:"Base Image",
-				id:"base_image",
+				id:"image",
 				options:[
 
 					{
-						id:"centos",
+						id:"centos-7-2-x64",
 						name:"CentOS"
 					},
 					{
-						id:"fedora",
-						name:"Fedora"
+						id:"centos-6-5-x64",
+						name:"CentOS 6.5 x64"
 					},
 					{
-						id:"ubuntu",
+						id:"ubuntu-14-04-x64",
 						name:"Ubuntu"
 					}				
 				]
