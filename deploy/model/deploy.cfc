@@ -85,12 +85,13 @@ component persistent="true" table="deploy" discriminatorColumn="deploy_type" {
 		}
 	}
 
-	public Optional function getProviderImplementedByName(required string name){
+	public Optional function getProviderImplementedByName(required string name, struct secureKeys={}){
 
 		var name = arguments.name;
+		var secureKeys = secureKeys;
 		var file = "/deploy/providers/#name#/provider.cfc";
 		if(fileExists(file)){
-			return new optional(createObject("deploy.providers.#name#.provider").init());
+			return new optional(createObject("deploy.providers.#name#.provider").init(secureKeys:secureKeys));
 		} else {
 			return new optional();
 		}

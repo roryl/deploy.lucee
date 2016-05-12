@@ -2,3 +2,4 @@
 /web/WEB-INF
 /testbox
 /deploy/model/encrypt.key
+/web/model/encrypt.key

@@ -1,7 +1,8 @@
 import deploy.model.providerMessage;
 component {
 
-	public function init(){
+	public function init(required struct secureKeys){
+		variables.secureKeys = arguments.secureKeys;		
 		return this;
 	}
 
@@ -10,7 +11,7 @@ component {
 	}
 
 	public boolean function destroyInstance(required id){
-		var droplet = new do("").destroyDroplet(arguments.id);	
+		var droplet = new do(variables.secureKeys.authorization).destroyDroplet(arguments.id);	
 		if(isBoolean(droplet) and droplet == true){
 			return droplet;
 		} else {
@@ -21,7 +22,7 @@ component {
 	}
 
 	public function getInstance(required id){
-		var droplet = new do("").getDroplet(arguments.id);
+		var droplet = new do(variables.secureKeys.authorization).getDroplet(arguments.id);
 		
 		if(structKeyExists(droplet,"droplet")){
 			droplet = droplet.droplet;
@@ -75,7 +76,7 @@ component {
 
 		// writeDump(args);
 		// abort;
-		var droplet = new do("").createDroplet(argumentCollection=args);
+		var droplet = new do(variables.secureKeys.authorization).createDroplet(argumentCollection=args);
 
 		if(structKeyExists(droplet,"droplet")){
 			droplet = droplet.droplet;
@@ -273,6 +274,17 @@ component {
 			originalResponse:vm
 		})
 		return message;
+	}
+
+	public array function getSecureKeys(){
+		var out = [
+			{
+				id:"authorization",
+				name:"Authorization Token",
+				required:true
+			}
+		]
+		return out;
 	}
 
 }

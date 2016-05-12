@@ -69,15 +69,20 @@ component persistent="true" table="app" discriminatorColumn="app_type" {
 		}
 	}
 
-	public array function getInactiveInstances(){
+	public array function getInactiveInstances(){		
 
-		var BalancedInstances = this.getBalancer().getInstances();
 		var AllInstances = this.getInstances();
 
 		var out = [];
 		if(isNull(AllInstances)){
 			return out;
 		}
+
+		if(isNull(this.getBalancer())){
+			return AllInstances;
+		}
+		
+		var BalancedInstances = this.getBalancer().getInstances();
 
 		for(var instance in allInstances){
 			if(this.getBalancer().hasInstance(instance)){
@@ -222,7 +227,10 @@ component persistent="true" table="app" discriminatorColumn="app_type" {
 		var out = {}
 		if(!isNull(SecureKeys)){
 			for(var setting in SecureKeys){
-				out[setting.getKey()] = getSecureKeyValueByKey(setting.getKey());
+				var value = getSecureKeyValueByKey(setting.getKey());
+				if(value.exists()){
+					out[setting.getKey()] = value.get();					
+				}
 			}			
 		}
 		return out;
@@ -251,11 +259,10 @@ component persistent="true" table="app" discriminatorColumn="app_type" {
 		if(isNull(SecureKey)){
 			return new Optional();
 		} else {
-			var value = decryptSecureKey(SecureKey.getValue(), SecureKey.getSalt());
+			var value = decryptSecureKey(SecureKey.getValue(), SecureKey.getSalt());			
 			return new Optional(value);
 		}
 	}
-
 
 	public boolean function putAllSettingsKeyValues(required struct settings){
 		var settings = arguments.settings;		
@@ -271,9 +278,9 @@ component persistent="true" table="app" discriminatorColumn="app_type" {
 		return semver.isZero();
 	}
 
-	public Provider function getProviderImplemented(){
-		
-		var ProviderOptional = this.getDeploy().getProviderImplementedByName(this.getProvider());
+	public Provider function getProviderImplemented(){		
+		var secureKeys = getSecureKeysAsStruct();
+		var ProviderOptional = this.getDeploy().getProviderImplementedByName(this.getProvider(), secureKeys);
 		return ProviderOptional.get();
 	}
 

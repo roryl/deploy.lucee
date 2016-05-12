@@ -283,8 +283,11 @@ component extends="testbox.system.baseSpec"{
 			var values = app.getSecureKeysAsStruct();
 			expect(value == "my value").toBeTrue();	
 			expect(isStruct(values)).toBeTrue();		
+			expect(values["my key"]).toBe("my value");			
 			transaction action="rollback";			
 		}
-	}	
+	}
+
+
 	
 }

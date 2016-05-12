@@ -48,9 +48,11 @@ component accessors="true" {
 
 	public function setSecure_Key(required struct secure_key){
 		variables.secure_key = secure_key;
-		for(var key in secure_key){
-			variables.secure_key[key] = encryptSecureKey(variables.secure_key[key]);
-		}
+		if(structKeyExists(variables,"current_step_submitted") AND variables.current_step_submitted == "secure_keys"){
+			for(var key in secure_key){
+				variables.secure_key[key] = encryptSecureKey(variables.secure_key[key]);				
+			}
+		} 
 	}
 
 	public function setDomain_Name(required domain_name){
@@ -68,6 +70,15 @@ component accessors="true" {
 			if(variables.provider == provider.name){
 				provider.selected = true;
 			}
+		}
+		return out;
+	}
+
+	public function getSecureKeysDecrypted(){
+		var keys = variables.secure_key;
+		out = {}
+		for(var key in keys){
+			out[key] = decryptSecureKey(keys[key]);
 		}
 		return out;
 	}
@@ -156,13 +167,13 @@ component accessors="true" {
 	private function encryptSecureKey(required string value){
 
 		var key = getSecretKey();
-		var encrypted = encrypt(string=value, key=key, algorithm="AES", encoding="Base64");
+		var encrypted = encrypt(string=value, key=key, algorithm="AES", encoding="base64");
 		return encrypted;
 	}
 
 	private function decryptSecureKey(required string value){
 		var key = getSecretKey();
-		var decrypted = decrypt(encrypted_string=value, key=key, algorithm="AES", encoding="Base64");
+		var decrypted = decrypt(encrypted_string=value, key=key, algorithm="AES", encoding="base64");		
 		return decrypted;
 	}
 }

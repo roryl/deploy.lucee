@@ -9,7 +9,7 @@ component accessors="true" {
 	}
 
 	private function serializeApps(required array apps){
-		var out = [];
+		var out = [];		
 		for(var app in apps){
 			out.append(serializeApp(app));
 		}
@@ -19,8 +19,10 @@ component accessors="true" {
 	private function serializeApp(required app app){
 
 		var app = arguments.app;
+
 		// writeDump(app.getBalancer());
 		// abort;
+		
 		var out = new serializer().serializeEntity(app, {
 			currentVersion:{
 				semver:{
@@ -351,7 +353,9 @@ component accessors="true" {
 								   image={},
 								   balancer={},
 								   goto_success = "/index.cfm",
-								   back=false) {
+								   secure_key={},
+								   back=false,
+								   ) {
 		
 		// writeDump(arguments);
 		// abort;
@@ -359,6 +363,16 @@ component accessors="true" {
 		transaction {
 			var app = Deploy.createApp(name, domain_name, provider);
 			entitySave(app);
+			var apps = new web.model.apps(Deploy);		
+			apps.setSecure_Key(secure_key);
+
+			var secureKeys = apps.getSecureKeysDecrypted();
+			// writeDump(secureKeys);
+			// abort;
+			for(var key in secureKeys){
+				app.putSecureKeyKeyValue(key, secureKeys[key]);
+			}
+
 			transaction action="commit";			
 		}
 
