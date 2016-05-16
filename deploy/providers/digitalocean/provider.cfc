@@ -181,6 +181,10 @@ component {
 		return out;
 	}
 
+	public function getBalancer(required host, required password){
+		return new balancer(arguments.host, arguments.password);
+	}
+
 	public function getBalancerOptions(){
 
 		out = [
@@ -197,83 +201,143 @@ component {
 						name:"HA Mod Proxy"
 					}			
 				]
-			}
+			},
+			{
+				name:"Region",
+				id:"region",
+				options:[
+
+					{
+						id:"nyc1",
+						name:"New York City 1"
+					},
+					{
+						id:"nyc2",
+						name:"New York City 2"
+					},
+					{
+						id:"sfo1",
+						name:"San Francisco 1"
+					},					
+				]
+			},
+			{
+				name:"Image Size",
+				id:"size",
+				options: [
+
+					{
+						id:"512mb",
+						name:"512 MB / 1 VCPU / 20GB"
+					},
+					{
+						id:"1gb",
+						name:"1 GB / 1 VCPU / 30GB"
+					}			     
+			    ]
+		    },
 		]
 		return out;
 	}
 
-	public providerMessage function deployLoadBalancer(required struct balancerOptions){
-		var vm = {
-		  "droplet": {
-		    "id": 3164494,
-		    "name": "example.com",
-		    "memory": 512,
-		    "vcpus": 1,
-		    "disk": 20,
-		    "locked": true,
-		    "status": "new",
-		    "kernel": {
-		      "id": 2233,
-		      "name": "Ubuntu 14.04 x64 vmlinuz-3.13.0-37-generic",
-		      "version": "3.13.0-37-generic"
-		    },
-		    "created_at": "2014-11-14T16:36:31Z",
-		    "features": [
-		      "virtio"
-		    ],
-		    "backup_ids": [
-
-		    ],
-		    "snapshot_ids": [
-
-		    ],
-		    "image": {
-		    },
-		    "size": {
-		    },
-		    "size_slug": "512mb",
-		    "networks": {
-		    },
-		    "region": {
-		    },
-		    "tags": [
-
-		    ]
-		  },
-		  "links": {
-		    "actions": [
-		      {
-		        "id": 36805096,
-		        "rel": "create",
-		        "href": "https://api.digitalocean.com/v2/actions/36805096"
-		      }
-		    ]
-		  }
+	public providerMessage function deployLoadBalancer(required string name, required struct balancerOptions){
+		
+		var options = {			
+			size:balancerOptions.size,
+			region:balancerOptions.region,
+			image:"centos-7-2-x64",			
 		}
 
-		var message = new providerMessage(argumentCollection={
-			success:true,
-			data:[
-				{
-					instanceId:vm.droplet.id,
-					name:vm.droplet.name,
-					memory:vm.droplet.memory,
-					vcpus:vm.droplet.vcpus,
-					disk:vm.droplet.disk,
-					host:"1.2.3.5"
-				},
-				{
-					instanceId:vm.droplet.id,
-					name:vm.droplet.name,
-					memory:vm.droplet.memory,
-					vcpus:vm.droplet.vcpus,
-					disk:vm.droplet.disk,
-					host:"1.2.3.6"
-				}
-			],
-			originalResponse:vm
-		})
-		return message;
+		var fileName = createUUID();
+		var userDataOut = fileOpen(fileName, "append");
+		var password = toBase64(createUUID());
+		
+		/*
+		Create the basic user data information
+		 */
+		var userData = fileOpen("scripts/balancer_user_data.sh");
+		while(!fileIsEOF(userData)){
+			var line = fileReadLine(userData);
+			line = replaceNoCase(line, "{{password}}", password, "all");
+			fileWriteLine(userDataOut, line);
+			// echo(line);
+		}		
+		fileWriteLine(userDataOut, "");
+		fileClose(userData);
+		
+		/*
+		Append out the httpd.conf file
+		 */
+		// var httpd = fileOpen("scripts/httpd.conf");
+		// while(!fileIsEOF(httpd)){
+		// 	var line = fileReadLine(httpd);
+		// 	line = replaceNoCase(line, '"', '\"', "all");
+		// 	fileWriteLine(userDataOut, 'echo "#line#" >> /etc/httpd/conf/httpd.conf');
+		// }
+		// fileWriteLine(userDataOut, "");
+		// fileClose(httpd);
+
+		var script = toBase64(fileRead("scripts/httpd.conf"));
+		fileWriteLine(userDataOut, 'echo "#script#" | base64 -d >> /etc/httpd/conf/httpd.conf');
+		
+		
+		var script = toBase64(fileRead("scripts/updatelb.sh"));
+		fileWriteLine(userDataOut, "echo #script# | base64 -d >> /home/balancer/bin/updatelb.sh");
+		fileClose(userDataOut);
+		// abort;
+		var PrimaryDropletProviderMessage = this.createInstance(arguments.name & "-primary", options, fileRead(fileName));
+		var SecondaryDropletProviderMessage = this.createInstance(arguments.name & "-secondary", options, fileRead(fileName));
+		fileDelete(fileName);		
+
+		var out = {
+			instances:[],
+			password:password
+		};
+		
+		if(PrimaryDropletProviderMessage.isSuccess() and secondaryDropletProviderMessage.isSuccess()){
+
+			out.instances.append(PrimaryDropletProviderMessage.getData());
+			out.instances.append(SecondaryDropletProviderMessage.getData());
+			
+			var balancerProviderMessage = new providerMessage(
+				success:true,
+				data:out,
+				originalResponse:[
+					PrimaryDropletProviderMessage.getOriginalResponse(),
+					SecondaryDropletProviderMessage.getOriginalResponse()
+				]
+			);
+
+			return balancerProviderMessage;
+		} else {
+			writeDump("Error executing balancer droplet creation");
+			writeDump(DropletProviderMessage.getOriginalResponse());
+			abort;
+		}
+
+
+		// var message = new providerMessage(argumentCollection={
+		// 	success:true,
+		// 	data:[
+		// 		{
+		// 			instanceId:vm.droplet.id,
+		// 			name:vm.droplet.name,
+		// 			memory:vm.droplet.memory,
+		// 			vcpus:vm.droplet.vcpus,
+		// 			disk:vm.droplet.disk,
+		// 			host:"1.2.3.5"
+		// 		},
+		// 		{
+		// 			instanceId:vm.droplet.id,
+		// 			name:vm.droplet.name,
+		// 			memory:vm.droplet.memory,
+		// 			vcpus:vm.droplet.vcpus,
+		// 			disk:vm.droplet.disk,
+		// 			host:"1.2.3.6"
+		// 		}
+		// 	],
+		// 	originalResponse:vm
+		// })		
 	}
 
 	public array function getSecureKeys(){

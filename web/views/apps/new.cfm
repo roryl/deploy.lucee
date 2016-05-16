@@ -67,7 +67,7 @@
 								<h2>Select Balancer</h2>
 								<p>Each App needs a load balancer. Select one of the balancer options provider by {{data.provider}}</p>
 								{{#each data.balancer_options}}
-								<label for="domain_name">Balancers</label>
+								<label for="domain_name">{{name}}</label>
 								<select class="form-control" name="balancer.{{id}}" 
 									{{#if data.balancer}}value="{{data.balancer}}"{{/if}}
 									{{#unless data.select_balancer.show}}readonly{{/unless}}>

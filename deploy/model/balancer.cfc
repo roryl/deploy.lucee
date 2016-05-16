@@ -21,16 +21,40 @@ component persistent="true" table="balancer" {
 
 	public function getProviderBalancer(){
 		var provider = this.getApp().getProviderImplemented();
-		return provider.getBalancer();
+		var primaryBalancer = this.getPrimaryBalancer();
+		var App = this.getApp();
+		var host = PrimaryBalancer.getHost();
+		var password = app.getSecureKeyValueByKey("balancer_password").elseThrow("Could not load the password, this should not have happened");
+		return provider.getBalancer(host, password);
+	}
+
+	public function getPrimaryBalancer(){
+		var balancers = this.getBalancerInstances();
+		for(var balancer in balancers){
+			if(balancer.isPrimary()){
+				return balancer;
+			}
+		}
+		throw("Could not find any primary balancer, this was in error");
 	}
 
 	public Throwable function deploy(){
 
 		var Provider = this.getApp().getProviderImplemented();
-		var ProviderMessage = Provider.deployLoadBalancer(this.getSettingsAsStruct());
+
+		var name = this.getApp().getName();
+		name = replaceNoCase(name, " ", "-", "all");
+		name = name & "-balancer";
+
+		var ProviderMessage = Provider.deployLoadBalancer(name, this.getSettingsAsStruct());
 		if(ProviderMessage.isSuccess()){
 
-			var instances = ProviderMessage.getData();
+			var instances = ProviderMessage.getData().instances;
+			var password = ProviderMessage.getData().password;
+
+			var App = this.getApp();
+			App.putSecureKeyKeyValue("balancer_password", password);
+
 			if(!isArray(instances)){
 				return new throwable("Provider did not return an array, we expected an array of instances");
 			}
@@ -47,7 +71,9 @@ component persistent="true" table="balancer" {
 				instance.setVcpus(data.vcpus);
 				instance.setMemory(data.memory);
 				instance.setDisk(data.disk);
-				instance.setStatus("running");
+				instance.setStatus(data.status);
+				App.addInstance(instance);
+				instance.setApp(App);
 			}
 
 			//Set the first instance as primary
@@ -62,12 +88,24 @@ component persistent="true" table="balancer" {
 	}
 
 	public void function _addInstance(required Instance instance){
-		// getProviderBalancer().addInstance(arguments.instance.getHost());
-		this.ORMAddInstance(arguments.instance);
+		var providerMessage = getProviderBalancer().addInstance(arguments.instance.getHost());
+
+		if(providerMessage.isSuccess()){
+			this.ORMAddInstance(arguments.instance);
+			arguments.instance.setBalancer(this);			
+		} else {
+			throw("Error adding instance to the balancer. The error was: #providerMessage.getData()#");
+		}
 	}
 
 	public void function _removeInstance(required Instance instance){
-		this.ORMRemoveInstance(arguments.instance);
+		var providerMessage = getProviderBalancer().removeInstance(arguments.instance.getHost());
+		if(providerMessage.isSuccess()){
+			this.ORMRemoveInstance(arguments.instance);
+			arguments.instance.setBalancer(JavaCast( "null", 0 ));		
+		} else {
+			throw("Error removing instance from the balancer. The error was: #providerMessage.getData()#");
+		}		
 	}
 
 	public function getOneRunningInstanceNotInMigration(required migration Migration){

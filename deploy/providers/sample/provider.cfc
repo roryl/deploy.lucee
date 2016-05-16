@@ -149,7 +149,7 @@ component {
 		return message;
 	}
 
-	public providerMessage function deployLoadBalancer(required struct balancerOptions){
+	public providerMessage function deployLoadBalancer(required string name, required struct balancerOptions){
 		var vm = {
 		  "droplet": {
 		    "id": 3164494,
@@ -200,31 +200,41 @@ component {
 
 		var message = new providerMessage(argumentCollection={
 			success:true,
-			data:[
-				{
-					instanceId:vm.droplet.id,
-					name:vm.droplet.name,
-					memory:vm.droplet.memory,
-					vcpus:vm.droplet.vcpus,
-					disk:vm.droplet.disk,
-					host:"1.2.3.5"
-				},
-				{
-					instanceId:vm.droplet.id,
-					name:vm.droplet.name,
-					memory:vm.droplet.memory,
-					vcpus:vm.droplet.vcpus,
-					disk:vm.droplet.disk,
-					host:"1.2.3.6"
-				}
-			],
-			originalResponse:vm
+			data:{
+				instances:[
+					{
+						instanceId:vm.droplet.id,
+						name:vm.droplet.name,
+						memory:vm.droplet.memory,
+						vcpus:vm.droplet.vcpus,
+						disk:vm.droplet.disk,
+						host:"1.2.3.5",
+						status:vm.droplet.status
+					},
+					{
+						instanceId:vm.droplet.id,
+						name:vm.droplet.name,
+						memory:vm.droplet.memory,
+						vcpus:vm.droplet.vcpus,
+						disk:vm.droplet.disk,
+						host:"1.2.3.6",
+						status:vm.droplet.status
+					}
+				],
+				password:"123456",
+				
+			},
+			originalResponse:[
+				vm,
+				vm
+			]
+			
 		})
 		return message;
 	}
 
-	public function getBalancer(required instance id){
-		return new balancer();
+	public function getBalancer(required host, required password){
+		return new balancer(arguments.host, arguments.password);
 	}
 
 	public function getImageOptions(){
@@ -316,7 +326,41 @@ component {
 						name:"HA Mod Proxy"
 					}			
 				]
-			}
+			},
+			{
+				name:"Region",
+				id:"region",
+				options:[
+
+					{
+						id:"nyc1",
+						name:"New York City 1"
+					},
+					{
+						id:"nyc2",
+						name:"New York City 2"
+					},
+					{
+						id:"sfo1",
+						name:"San Francisco 1"
+					},					
+				]
+			},
+			{
+				name:"Image Size",
+				id:"size",
+				options: [
+
+					{
+						id:"512mb",
+						name:"512 MB / 1 VCPU / 20GB"
+					},
+					{
+						id:"1gb",
+						name:"1 GB / 1 VCPU / 30GB"
+					}			     
+			    ]
+		    },
 		]
 		return out;
 	}

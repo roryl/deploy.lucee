@@ -20,17 +20,11 @@ component {
 		if(fileExists("runerror")){fileDelete("runerror")};
 		if(fileExists("runout")){fileDelete("runout")};
 
-		command = "#scriptPath# balancer #variables.password# #variables.balancerHost#  a #host#";
-
-		// var Runtime = createObject("java", "java.lang.Runtime").getRuntime();
-		// var process = Runtime.exec(command);
-		// writeDump(process);
-		// sleep(5);
-		// writeDump(process.getOutputStream());
+		command = "#scriptPath# balancer #variables.password# #variables.balancerHost# a #host#";	
+		// writeDump(command);
 		// abort;
-		
 		try {
-			execute name="#scriptPath# #variables.balancerHost# balancer #variables.password# a #host#" errorfile="runerror" outputfile="runout" timeout="10" errorvariable="errorout";			
+			execute name="#command#" errorfile="runerror" outputfile="runout" timeout="10" errorvariable="errorout";			
 		} catch(any e){			
 			throw(e);			
 		}
@@ -51,8 +45,11 @@ component {
 		if(fileExists("runerror")){fileDelete("runerror")};
 		if(fileExists("runout")){fileDelete("runout")};
 
+		command = "#scriptPath# balancer #variables.password# #variables.balancerHost# r #host#";	
+		// writeDump(command);
+		// abort;
 		try {
-			execute name="#scriptPath# #variables.balancerHost# balancer #variables.password# r #host#" errorfile="runerror" outputfile="runout" timeout="10" errorvariable="errorout";			
+			execute name="#command#" errorfile="runerror" outputfile="runout" timeout="10" errorvariable="errorout";			
 		} catch(any e){			
 			throw(e);			
 		}

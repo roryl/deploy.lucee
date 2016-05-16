@@ -154,7 +154,16 @@ component extends=""{
 	function createDeployWithAppAndImageAndBalancer(){
 		var deploy = createDeployWithAppWithImage();
 		var app = deploy.getApps()[1];
-		var balancer = app.createBalancer({});
+		var balancer = app.createBalancer({});		
+		ORMFlush();
+		return deploy;
+	}
+
+	function createDeployWithAppAndImageAndBalancerAndInstancesNotBalanced(){
+		var deploy = createDeployWithAppAndImageAndBalancer();
+		var app = deploy.getApps()[1];
+		app.createInstance();
+		app.createInstance();
 		ORMFlush();
 		return deploy;
 	}

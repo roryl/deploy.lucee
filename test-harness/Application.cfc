@@ -13,6 +13,8 @@ component{
 
 	currentPath = getDirectoryFromPath(getCurrentTemplatePath());
 	this.mappings[ "/deploy" ] = expandPath(currentPath & "../deploy");
+
+	this.javaSettings = {LoadPaths = ["../deploy/vendor/sshj"]};
 	
 
 	// this.mappings["/deploy"] = getDirectoryFromPath( get)

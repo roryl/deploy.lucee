@@ -40,6 +40,12 @@ component extends="testbox.system.baseSpec"{
 		ORMGetSession().close();
 	}
 
+	function getSecureKeys(){
+		return {
+			authorization:fileRead("do.key")
+		}
+	}
+
 /*********************************** TEST CASES BELOW ***********************************/
 	
 	function basicRequestTest(){
@@ -78,6 +84,16 @@ component extends="testbox.system.baseSpec"{
 		// var id = result.droplet.id;
 		// var destroy = do.destroyDroplet(id);
 		// writeDump(destroy);
+	}
+
+	function deployBalancerTest(){
+		// var Provider = new provider(getSecureKeys());
+		// var options = {
+		// 	region:"nyc1",
+		// 	size:"512mb"
+		// }
+		// var result = Provider.deployLoadBalancer("test-balancer-#createUUID()#", options);
+		// writeDump(result);
 	}
 	
 	

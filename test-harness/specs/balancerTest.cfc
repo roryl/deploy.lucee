@@ -40,23 +40,30 @@ component extends=""{
 /*********************************** TEST CASES BELOW ***********************************/
 	
 	function getSettingsAsStructTest(){
-		var Balancer = new ormTest().createBalancer();
-		var Setting = new ormTest().createBalancerSetting();
-		var Setting1 = new ormTest().createBalancerSetting();
-		balancer.addBalancerSetting(setting);
-		balancer.addBalancerSetting(setting1);
-		var settings = balancer.getSettingsAsStruct();
-		expect(isStruct(settings)).toBeTrue();
+
+		transaction {
+			var Balancer = new ormTest().createBalancer();
+			var Setting = new ormTest().createBalancerSetting();
+			var Setting1 = new ormTest().createBalancerSetting();
+			balancer.addBalancerSetting(setting);
+			balancer.addBalancerSetting(setting1);
+			var settings = balancer.getSettingsAsStruct();
+			expect(isStruct(settings)).toBeTrue();
+			transaction action="rollback";			
+		}
 	}
 
 	/*
 	Should return an empty struct if there are no settings
 	 */
 	function getSettingsAsStructNullTest(){
-		var Balancer = new ormTest().createBalancer();
-		var settings = balancer.getSettingsAsStruct();
-		expect(isStruct(settings)).toBeTrue();
-		expect(settings.isEmpty()).toBeTrue();
+		transaction {
+			var Balancer = new ormTest().createBalancer();
+			var settings = balancer.getSettingsAsStruct();
+			expect(isStruct(settings)).toBeTrue();
+			expect(settings.isEmpty()).toBeTrue();
+			transaction action="rollback";		
+		}
 	}	
 
 	function putBalancerSettingTest(){
@@ -64,25 +71,41 @@ component extends=""{
 		transaction {
 			var Balancer = new ormTest().createBalancer();
 			Balancer.putBalancerSettingKeyValue("size", "512mb");
-			transaction action="commit";			
+			expect(balancer.hasBalancerSetting()).toBeTrue();
+			expect(balancer.getBalancerSettings()[1].getKey()).toBe("size");
+			expect(balancer.getBalancerSettings()[1].getValue()).toBe("512mb");
+			expect(balancer.getBalancerSettingValueByKey("size")).toBeInstanceOf("Optional");
+			expect(balancer.getBalancerSettingValueByKey("size").get()).toBe("512mb");
+			transaction action="rollback";			
 		}
-		expect(balancer.hasBalancerSetting()).toBeTrue();
-		expect(balancer.getBalancerSettings()[1].getKey()).toBe("size");
-		expect(balancer.getBalancerSettings()[1].getValue()).toBe("512mb");
-		expect(balancer.getBalancerSettingValueByKey("size")).toBeInstanceOf("Optional");
-		expect(balancer.getBalancerSettingValueByKey("size").get()).toBe("512mb");
 	}
 
 	function deployTest(){
 
-		var Balancer = new appTest().createBalancerTest();
-		DeployedThrowable = Balancer.deploy();
-		expect(DeployedThrowable.threw()).toBeFalse();
-		expect(Balancer.isDeployed()).toBeTrue();
+		transaction {
+			var Balancer = new appTest().createBalancerTest();
+			DeployedThrowable = Balancer.deploy();
+			expect(DeployedThrowable.threw()).toBeFalse();
+			expect(Balancer.isDeployed()).toBeTrue();
 
-		var Instances = Balancer.getBalancerInstances();
-		expect(arrayLen(instances)).toBe(2);		
-		expect(instances[1].isPrimary()).toBeTrue();
+			var Instances = Balancer.getBalancerInstances();
+			expect(arrayLen(instances)).toBe(2);		
+			expect(instances[1].isPrimary()).toBeTrue();
+			expect(Balancer.getApp().getSecureKeyValueByKey("balancer_password").get()).toBe("123456");
+			transaction action="rollback";
+		}
+	}
+
+	function addInstanceTest(){
+
+		var deploy = new ormTest().createDeployWithAppAndImageAndBalancerAndInstancesNotBalanced();
+		var app = deploy.getApps()[1];		
+		var balancer = app.getBalancer();
+		var Instance = app.getInstances()[1];
+		balancer.deploy();
+		balancer.addInstance(Instance);
+		balancer.removeInstance(Instance);
+
 	}
 	
 }

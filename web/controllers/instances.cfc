@@ -101,6 +101,11 @@ component accessors="true" {
 
 		var Deploy = variables.fw.getDeploy();
 		var Instance = Deploy.getInstanceById(id).elseThrow("Could not load the instance ID");
+		Instance.refresh();
+		if(Instance.getStatus() == "new"){
+			throw("Could not balance the instance because it is new. Wait for the instance to be active and healthy");
+		}
+
 		var Balancer = Instance.getBalancer();
 		
 		if(isNull(Balancer)){

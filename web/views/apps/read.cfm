@@ -69,6 +69,7 @@
 									<tr>
 										<td>Instance ID</td>
 										<td>status</td>
+										<td>Host</td>
 										<td>Primary?</td>																				
 									</tr>
 								</thead>
@@ -77,7 +78,18 @@
 									<tr>
 										<td>{{instance_id}}</td>
 										<td>{{status}}</td>
-										<td>{{is_primary}}</td>										
+										<td>{{host}}</td>
+										<td>{{is_primary}}</td>	
+										<td>
+											<form action="/index.cfm/instances/{{id}}/refresh" method="post">
+												<input type="hidden" name="goto" value="/index.cfm/apps/{{@root.data.id}}" />
+												<button type="submit" class="btn btn-primary btn-xs">Refresh</button>
+											</form>
+											<form action="/index.cfm/instances/{{id}}/delete" method="post" style="display:inline;">
+												<input type="hidden" name="goto" value="/index.cfm/apps/{{@root.data.id}}" />
+												<button type="submit" class="btn btn-primary btn-xs">Delete</button>
+											</form>
+										</td>									
 									</tr>
 									{{/each}}
 								</tbody>

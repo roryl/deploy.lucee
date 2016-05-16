@@ -57,9 +57,11 @@ component persistent="true" table="app" discriminatorColumn="app_type" {
 
 	public Balancer function createBalancer(required struct settings){
 		var balancer = entityNew("balancer");
+		var settings = arguments.settings;
 		entitySave(balancer);
 		this.setBalancer(balancer);
 		balancer.setApp(this);
+		balancer.putAllSettingsKeyValues(arguments.settings);
 		return balancer;
 	}
 
@@ -81,11 +83,11 @@ component persistent="true" table="app" discriminatorColumn="app_type" {
 		if(isNull(this.getBalancer())){
 			return AllInstances;
 		}
-		
+
 		var BalancedInstances = this.getBalancer().getInstances();
 
 		for(var instance in allInstances){
-			if(this.getBalancer().hasInstance(instance)){
+			if(this.getBalancer().hasBalancerInstance(instance) OR this.getBalancer().hasInstance(instance) OR instance.hasImageTest()){
 				continue;
 			} else {
 				out.append(instance);
