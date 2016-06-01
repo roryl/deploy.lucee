@@ -47,11 +47,26 @@ th, td {
   /*color: #fff;*/
 }
 
+.btn-primary {
+  background-color: #1880B1;
+  /*color: #fff;*/
+}
+
+.jumbotron-info {
+  background-color: #38687F;
+}
+
 td .table-action {
   border-style:none;
   border-width:0px;
   background-color:;
 }
+
+.grid-view > li > h5 > a {
+  font-weight:bold;
+  color:#38687F;
+}
+
 /*
 .btn .breadcrumb {
   margin-bottom:20px;

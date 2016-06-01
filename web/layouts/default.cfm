@@ -49,7 +49,7 @@
 			  <span class="icon-bar"></span>
 			</button>
 
-			<a class="navbar-brand" href="#buildURL('')#"><img src="/assets/img/deploy.lucee.fw.png" alt="logo"></a>
+			<a class="navbar-brand" href="#buildURL('')#"><img src="/assets/img/droppanel.fw.png" alt="logo"></a>
 		  </div>
 		  <!-- END Toggle buttons and brand -->
 
